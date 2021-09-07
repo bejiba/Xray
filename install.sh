@@ -145,8 +145,10 @@ install_Xray() {
     echo -e "${green}Xray ${last_version}${plain} 安装完成，已设置开机自启"
     cp geoip.dat /etc/Xray/
     cp geosite.dat /etc/Xray/ 
-	cp dns.json /etc/Xray/
-	cp rulelist /etc/Xray/
+    cp dns.json /etc/Xray/
+    cp rulelist /etc/Xray/
+    cp custom_outbound.json /etc/Xray/
+    cp route.json /etc/Xray/
 
     if [[ ! -f /etc/Xray/config.yml ]]; then
         cp config.yml /etc/Xray/
