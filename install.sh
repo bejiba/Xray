@@ -187,7 +187,7 @@ install_Xray() {
     echo "Xray disable            - 取消 Xray 开机自启"
     echo "Xray log                - 查看 Xray 日志"
     echo "Xray update             - 更新 Xray"
-    echo "Xray update x.x.x       - 更新 Xray 指定版本"
+    echo "Xray update vx.x.x      - 更新 Xray 指定版本"
     echo "Xray config             - 显示配置文件内容"
     echo "Xray install            - 安装 Xray"
     echo "Xray uninstall          - 卸载 Xray"
