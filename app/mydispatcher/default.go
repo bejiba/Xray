@@ -9,8 +9,8 @@ import (
 	"sync"
 	"time"
 
-	"github.com/frainzy1477/Xray/common/limiter"
-	"github.com/frainzy1477/Xray/common/rule"
+	"github.com/xcode75/Xray/common/limiter"
+	"github.com/xcode75/Xray/common/rule"
 	"github.com/xtls/xray-core/common"
 	"github.com/xtls/xray-core/common/buf"
 	"github.com/xtls/xray-core/common/log"

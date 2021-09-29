@@ -9,7 +9,7 @@ on:
 name: docker-build
 jobs:
   build:
-    if: github.repository == 'frainzy1477/Xray'
+    if: github.repository == 'xcode75/Xray'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout the code

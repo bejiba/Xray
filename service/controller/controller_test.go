@@ -8,10 +8,10 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/frainzy1477/Xray/api"
-	"github.com/frainzy1477/Xray/api/xmanager"
-	_ "github.com/frainzy1477/Xray/main/distro/all"
-	. "github.com/frainzy1477/Xray/service/controller"
+	"github.com/xcode75/Xray/api"
+	"github.com/xcode75/Xray/api/xmanager"
+	_ "github.com/xcode75/Xray/main/distro/all"
+	. "github.com/xcode75/Xray/service/controller"
 	"github.com/xtls/xray-core/core"
 	"github.com/xtls/xray-core/infra/conf"
 )

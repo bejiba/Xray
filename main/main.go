@@ -11,7 +11,7 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/frainzy1477/Xray/panel"
+	"github.com/xcode75/Xray/panel"
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )

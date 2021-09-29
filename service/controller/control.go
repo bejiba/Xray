@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 
-	"github.com/frainzy1477/Xray/api"
-	"github.com/frainzy1477/Xray/app/mydispatcher"
+	"github.com/xcode75/Xray/api"
+	"github.com/xcode75/Xray/app/mydispatcher"
 	"github.com/xtls/xray-core/common/protocol"
 	"github.com/xtls/xray-core/core"
 	"github.com/xtls/xray-core/features/inbound"

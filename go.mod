@@ -1,4 +1,4 @@
-module github.com/frainzy1477/Xray
+module github.com/xcode75/Xray
 
 go 1.17
 
