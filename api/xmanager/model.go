@@ -28,6 +28,7 @@ type UserResponse struct {
 	ForbiddenPort string `json:"forbidden_port"`
 	UUID          string `json:"uuid"`
 	IPcount       int    `json:"online_ip_count"`
+	IPs           string `json:"onlineips"`
 }
 
 // Response is the common response

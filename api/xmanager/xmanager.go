@@ -10,7 +10,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/xcode75/Xray/api"
@@ -35,8 +34,6 @@ type APIClient struct {
 	SpeedLimit    float64
 	DeviceLimit   int
 	LocalRuleList []api.DetectRule
-	LastReportOnline map[int]int
-	access           sync.Mutex
 }
 
 // New creat a api instance
@@ -71,7 +68,6 @@ func New(apiConfig *api.Config) *APIClient {
 		SpeedLimit:    apiConfig.SpeedLimit,
 		DeviceLimit:   apiConfig.DeviceLimit,
 		LocalRuleList: localRuleList,
-		LastReportOnline: make(map[int]int),
 	}
 	return apiClient
 }
@@ -230,22 +226,11 @@ func (c *APIClient) ReportNodeStatus(nodeStatus *api.NodeStatus) (err error) {
 
 //ReportNodeOnlineUsers reports online user ip
 func (c *APIClient) ReportNodeOnlineUsers(onlineUserList *[]api.OnlineUser) error {
-	c.access.Lock()
-	defer c.access.Unlock()
-
-	reportOnline := make(map[int]int)
-	
 	data := make([]OnlineUser, len(*onlineUserList))
 	for i, user := range *onlineUserList {
 		data[i] = OnlineUser{UID: user.UID, IP: user.IP}
-		if _, ok := reportOnline[user.UID]; ok {
-			reportOnline[user.UID]++
-		} else {
-			reportOnline[user.UID] = 1
-		}
 	}
-	c.LastReportOnline = reportOnline // Update LastReportOnline
-	
+
 	postData := &PostData{Data: data}
 	path := fmt.Sprintf("/webapi/users/aliveip")
 	res, err := c.client.R().
@@ -603,14 +588,8 @@ func (c *APIClient) ParseTrojanNodeResponse(nodeInfoResponse *NodeInfoResponse) 
 
 // ParseUserListResponse parse the response for the given nodeinfo format
 func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]api.UserInfo, error) {
-	c.access.Lock()
-	// Clear Last report log
-	defer func() {
-		c.LastReportOnline = make(map[int]int)
-		c.access.Unlock()
-	}()
-	
-	var deviceLimit, localDeviceLimit, ipcount int = 0, 0, 0
+
+	var deviceLimit int = 0
 	var speedlimit uint64 = 0
 
 	userList := []api.UserInfo{}
@@ -621,23 +600,7 @@ func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]
 		} else {
 			deviceLimit = user.DeviceLimit
 		}
-		
-		
-		if deviceLimit > 0 {
-			lastOnline := 0
-			if v, ok := c.LastReportOnline[user.ID]; ok {
-				lastOnline = v
-			}
-			if localDeviceLimit = deviceLimit - user.IPcount + lastOnline; localDeviceLimit > 0 {
-				ipcount = localDeviceLimit
-				// If this backend server has reported any user in the last reporting period.
-			} else if lastOnline > 0 {
-				ipcount = lastOnline
-				// Remove this user.
-			} else {
-				continue
-			}
-		}
+				
 		
 		if c.SpeedLimit > 0 {
 			speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
@@ -652,7 +615,8 @@ func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]
 			Passwd:        user.Passwd,
 			SpeedLimit:    speedlimit,
 			DeviceLimit:   deviceLimit,
-			IPcount:       ipcount,
+			IPcount:       user.IPcount,
+			IPs:           user.IPs,
 		})
 	}
 

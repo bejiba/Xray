@@ -2,7 +2,10 @@
 package limiter
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"fmt"
+	"strings"
 	"sync"
 	"time"
 	
@@ -15,6 +18,7 @@ type UserInfo struct {
 	SpeedLimit  uint64
 	DeviceLimit int
 	IPcount     int
+	IPs	        string
 }
 
 type InboundInfo struct {
@@ -49,6 +53,7 @@ func (l *Limiter) AddInboundLimiter(tag string, nodeSpeedLimit uint64, userList 
 			SpeedLimit:  u.SpeedLimit,
 			DeviceLimit: u.DeviceLimit,
 			IPcount:     u.IPcount,
+			IPs:         u.IPs,
 		})
 	}
 	inboundInfo.UserInfo = userMap
@@ -67,6 +72,7 @@ func (l *Limiter) UpdateInboundLimiter(tag string, updatedUserList *[]api.UserIn
 				SpeedLimit:  u.SpeedLimit,
 				DeviceLimit: u.DeviceLimit,
 				IPcount:     u.IPcount,
+				IPs:         u.IPs,
 			})
 			inboundInfo.BucketHub.Delete(fmt.Sprintf("%s|%s|%d", tag, u.Email, u.UID)) // Delete old limiter bucket
 		}
@@ -118,12 +124,14 @@ func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *r
 		var userLimit uint64 = 0
 		var deviceLimit,IPcount int = 0,0
 		var uid int = 0
+		var IPs string
 		if v, ok := inboundInfo.UserInfo.Load(email); ok {
 			u := v.(UserInfo)
 			uid = u.UID
 			userLimit = u.SpeedLimit
 			deviceLimit = u.DeviceLimit
 			IPcount =     u.IPcount
+			IPs =         u.IPs
 		}
 		// Report online device
 		ipMap := new(sync.Map)
@@ -138,9 +146,21 @@ func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *r
 					counter++
 					return true
 				})
-				if counter > IPcount && deviceLimit > 0 {	
+				if counter > IPcount && deviceLimit > 0 {
+				    iphash := md5.Sum([]byte(ip))
+					newip  := hex.EncodeToString(iphash[:])
+					onlineips := strings.Split(IPs, ",")
+					alivecount := 0
+					for _, alive := range onlineips {
+						if alive == newip {
+						   alivecount++
+						}
+					}
+					
+					if alivecount == 0 {
 						ipMap.Delete(ip)
-						return nil, false, true	
+						return nil, false, true
+					}
 				}
 			}
 		}
