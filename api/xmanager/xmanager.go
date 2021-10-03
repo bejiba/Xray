@@ -589,7 +589,7 @@ func (c *APIClient) ParseTrojanNodeResponse(nodeInfoResponse *NodeInfoResponse) 
 // ParseUserListResponse parse the response for the given nodeinfo format
 func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]api.UserInfo, error) {
 
-	var deviceLimit int = 0
+	var deviceLimit, onlintipcount int = 0, 0
 	var speedlimit uint64 = 0
 
 	userList := []api.UserInfo{}
@@ -601,6 +601,9 @@ func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]
 			deviceLimit = user.DeviceLimit
 		}
 				
+		if c.DeviceLimit > 0 {
+			onlintipcount = deviceLimit - user.IPcount
+		}
 		
 		if c.SpeedLimit > 0 {
 			speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
@@ -615,7 +618,7 @@ func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]
 			Passwd:        user.Passwd,
 			SpeedLimit:    speedlimit,
 			DeviceLimit:   deviceLimit,
-			IPcount:       user.IPcount,
+			IPcount:       onlintipcount,
 			IPs:           user.IPs,
 		})
 	}
