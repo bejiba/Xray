@@ -1,0 +1,51 @@
+Log:
+  Level: info                                   # Log level: none, error, warning, info, debug
+  AccessPath: #/etc/Xray/access.Log 
+  ErrorPath: #/etc/Xray/error.log
+DnsConfigPath: /etc/Xray/dns.json               #https://xtls.github.io/config/base/dns/
+RouteConfigPath: # /etc/Xray/route.json         #https://xtls.github.io/config/base/route/
+OutboundConfigPath: # /etc/Xray/outbound.json   #https://xtls.github.io/config/base/outbound/
+ConnetionConfig:
+  Handshake: 4 
+  ConnIdle: 300 
+  UplinkOnly: 0 
+  DownlinkOnly: 0 
+  BufferSize: 64 
+Nodes:  
+  -
+    ApiConfig:
+      ApiHost: "https://www.xx.com"
+      ApiKey: "xx"
+      NodeID: 2
+      Timeout: 30 
+      SpeedLimit: 0 
+      DeviceLimit: 0 
+      RuleListPath: #/etc/Xray/rulelist 
+    ControllerConfig:
+      ListenIP: 0.0.0.0 
+      SendIP:  0.0.0.0 
+      UpdatePeriodic: 60 
+      EnableDNS: false
+      DisableUploadTraffic: false      
+      DisableGetRule: false      
+      DNSType: AsIs                          # AsIs, UseIP, UseIPv4, UseIPv6
+      EnableProxyProtocol: false             # Only works for WebSocket and TCP
+      EnableFallback: false                  # Only support for Trojan and Vless
+      FallBackConfigs:                       # Support multiple fallbacks
+        -
+          SNI:                               # TLS SNI(Server Name Indication), Empty for any
+          Path:                              # HTTP PATH, Empty for any
+          Dest: 80                           # https://xtls.github.io/config/fallback/
+          ProxyProtocolVer: 0 
+      CertConfig:
+        CertMode: http                       # file, dns, http, none
+        CertDomain: "hk.xx.com"              # Domain to cert	
+        CertFile: /etc/Xray/hk.xx.com.crt
+        KeyFile: /etc/Xray/hk.xx.com.key
+        Email: xxx@gmail.com
+        Provider: cloudflare                 # https://go-acme.github.io/lego/dns/
+        DNSEnv: 
+          CLOUDFLARE_EMAIL: 
+          CLOUDFLARE_API_KEY: 
+
+ 
