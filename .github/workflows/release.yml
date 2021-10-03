@@ -15,15 +15,6 @@ jobs:
         goarch: [amd64, 386]
         include:
           - goos: linux
-            goarch: arm
-            goarm: 7
-          - goos: linux
-            goarch: arm
-            goarm: 6
-          - goos: linux
-            goarch: arm
-            goarm: 5
-          - goos: linux
             goarch: arm64
 
       fail-fast: false
