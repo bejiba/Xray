@@ -313,8 +313,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 	var  AlterID = 0
 	
 	port := nodeInfoResponse.Port
-	EnableVless = false
-	TLSType = nodeInfoResponse.Security
+	TLSType := nodeInfoResponse.Security
 	
 	if nodeInfoResponse.Address == "" {
 		return nil, fmt.Errorf("No server address in response")
