@@ -5,7 +5,6 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"strings"
 	"sync"
 	"time"
 	"regexp"

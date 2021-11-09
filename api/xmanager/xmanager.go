@@ -148,16 +148,8 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 	if err := json.Unmarshal(response.Data, nodeInfoResponse); err != nil {
 		return nil, fmt.Errorf("Unmarshal %s failed: %s", reflect.TypeOf(nodeInfoResponse), err)
 	}
-	switch nodeInfoResponse.Type {
-	case "V2ray":
-	     "Vless":
-		 "Trojan":
-		 "Shadowsocks":
-		 "Shadowsocks-Plugin":
-		nodeInfo, err = c.ParseNodeResponse(nodeInfoResponse)	
-	default:
-		return nil, fmt.Errorf("Unsupported Node type: %s", nodeInfoResponse.Type)
-	}
+
+    nodeInfo, err = c.ParseNodeResponse(nodeInfoResponse)	
 
 	if err != nil {
 		res, _ := json.Marshal(nodeInfoResponse)
