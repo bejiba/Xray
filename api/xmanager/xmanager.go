@@ -396,7 +396,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		ServiceName:       ServiceName,
 		HeaderType:        HeaderType,
 		CypherMethod:      nodeInfoResponse.Method,
-		AllowInsecure      nodeInfoResponse.AllowInsecure,
+		AllowInsecure:     nodeInfoResponse.AllowInsecure,
 	}
 
 	return nodeinfo, nil
