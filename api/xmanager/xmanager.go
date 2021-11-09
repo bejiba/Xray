@@ -332,7 +332,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		if nodeInfoResponse.Protocol == "grpc" {
 			transportProtocol = "grpc"
 			if nodeInfoResponse.Path != "" {
-				ServiceName := nodeInfoResponse.Path
+				ServiceName = nodeInfoResponse.Path
 			}
 		}
 	}
@@ -342,11 +342,11 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		if nodeInfoResponse.Security == "tls" {
 			enableTLS = true
 		}
-		HeaderType := nodeInfoResponse.Headertype
+		HeaderType = nodeInfoResponse.Headertype
 		if nodeInfoResponse.Protocol == "grpc" {
 			transportProtocol = "grpc"
 			if nodeInfoResponse.Path != "" {
-				ServiceName := nodeInfoResponse.Path
+				ServiceName = nodeInfoResponse.Path
 			}
 		}
 	}	
@@ -356,11 +356,11 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		if nodeInfoResponse.Security == "tls" || nodeInfoResponse.Security == "xtls"{
 			enableTLS = true
 		}
-		HeaderType := nodeInfoResponse.Headertype
+		HeaderType = nodeInfoResponse.Headertype
 		if nodeInfoResponse.Protocol == "grpc" {
 			transportProtocol = "grpc"
 			if nodeInfoResponse.Path != "" {
-				ServiceName := nodeInfoResponse.Path
+				ServiceName = nodeInfoResponse.Path
 			}
 		}
 	}
@@ -384,10 +384,6 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 	} else {
 		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
 	}
-	
-	
-	
-	
 	
 	nodeinfo := &api.NodeInfo{
 		NodeType:          nodeInfoResponse.Type,
