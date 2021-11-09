@@ -12,12 +12,12 @@ type NodeInfoResponse struct {
 	Port		    int     `json:"port"`
 	Address         string  `json:"server"`
 	Type            string  `json:"type"`
-	Security		bool	`json:"security"`
+	Security		string	`json:"security"`
 	Host            string  `json:"host"`
 	Path            string  `json:"path"`
 	Headertype      string  `json:"headertype"`
     Protocol        string  `json:"protocol"`	
-	Connectlimit    string  `json:"connectlimit"`
+	Connectlimit    int  `json:"connectlimit"`
 }
 
 
