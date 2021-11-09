@@ -17,7 +17,8 @@ type NodeInfoResponse struct {
 	Path            string  `json:"path"`
 	Headertype      string  `json:"headertype"`
     Protocol        string  `json:"protocol"`	
-	Connectlimit    int  `json:"connectlimit"`
+	Connectlimit    int     `json:"connectlimit"`
+	AllowInsecure   bool    `json:"allowinsecure"`
 }
 
 

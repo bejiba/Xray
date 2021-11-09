@@ -34,6 +34,7 @@ type NodeInfo struct {
 	CypherMethod      string
 	ServiceName       string
 	HeaderType        string
+	AllowInsecure     bool
 }
 
 

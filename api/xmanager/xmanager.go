@@ -321,11 +321,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 
 	if nodeInfoResponse.Type == "Trojan" {
 		transportProtocol = "tcp"
-		if nodeInfoResponse.Security == "xtls" {
-			enableTLS = true
-		}
-		
-		if nodeInfoResponse.Security == "tls" {
+		if nodeInfoResponse.Security == "xtls" || nodeInfoResponse.Security == "tls"{
 			enableTLS = true
 		}
 		
@@ -370,6 +366,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 	}
 	
 	if nodeInfoResponse.Type == "Shadowsocks-Plugin" {
+	    transportProtocol = nodeInfoResponse.Protocol
 		port = port - 1
 		if port <= 0 {
 			return nil, fmt.Errorf("Shadowsocks-Plugin listen port must be greater than 1")
@@ -399,6 +396,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		ServiceName:       ServiceName,
 		HeaderType:        HeaderType,
 		CypherMethod:      nodeInfoResponse.Method,
+		AllowInsecure      nodeInfoResponse.AllowInsecure,
 	}
 
 	return nodeinfo, nil

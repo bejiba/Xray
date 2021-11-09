@@ -166,26 +166,16 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 		if nodeInfo.TLSType == "tls" {
 			tlsSettings := &conf.TLSConfig{}
 			tlsSettings.Certs = append(tlsSettings.Certs, &conf.TLSCertConfig{CertFile: certFile, KeyFile: keyFile, OcspStapling: 3600})
-
+			if nodeInfo.AllowInsecure {
+				tlsSettings.Insecure = true
+			}
 			streamSetting.TLSSettings = tlsSettings
 		} else if nodeInfo.TLSType == "xtls" {
 			xtlsSettings := &conf.XTLSConfig{}
 			xtlsSettings.Certs = append(xtlsSettings.Certs, &conf.XTLSCertConfig{CertFile: certFile, KeyFile: keyFile, OcspStapling: 3600})
-			streamSetting.XTLSSettings = xtlsSettings
-		}
-	}
-	
-	//Allow Insecure mode
-	if nodeInfo.TLSType == "none" {
-		streamSetting.Security = nodeInfo.TLSType
-		if nodeInfo.TLSType == "tls" {
-			tlsSettings := &conf.TLSConfig{}
-			tlsSettings.Insecure = true
-			streamSetting.TLSSettings = tlsSettings
-			
-		} else if nodeInfo.TLSType == "xtls" {
-			xtlsSettings := &conf.XTLSConfig{}
-			xtlsSettings.Insecure = true
+			if nodeInfo.AllowInsecure {
+				xtlsSettings.Insecure = true
+			}
 			streamSetting.XTLSSettings = xtlsSettings
 		}
 	}
