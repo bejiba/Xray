@@ -312,6 +312,8 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 	var  speedlimit uint64 = 0
 
 	port := nodeInfoResponse.Port
+	HeaderType := "none"
+	ServiceName := ""
 	
 	if nodeInfoResponse.Address == "" {
 		return nil, fmt.Errorf("No server address in response")
@@ -329,6 +331,9 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		
 		if nodeInfoResponse.Protocol == "grpc" {
 			transportProtocol = "grpc"
+			if nodeInfoResponse.Path != "" {
+				ServiceName := nodeInfoResponse.Path
+			}
 		}
 	}
 	
@@ -337,12 +342,26 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		if nodeInfoResponse.Security == "tls" {
 			enableTLS = true
 		}
+		HeaderType := nodeInfoResponse.Headertype
+		if nodeInfoResponse.Protocol == "grpc" {
+			transportProtocol = "grpc"
+			if nodeInfoResponse.Path != "" {
+				ServiceName := nodeInfoResponse.Path
+			}
+		}
 	}	
 
 	if nodeInfoResponse.Type == "Vless" {		
 		transportProtocol = nodeInfoResponse.Protocol
 		if nodeInfoResponse.Security == "tls" || nodeInfoResponse.Security == "xtls"{
 			enableTLS = true
+		}
+		HeaderType := nodeInfoResponse.Headertype
+		if nodeInfoResponse.Protocol == "grpc" {
+			transportProtocol = "grpc"
+			if nodeInfoResponse.Path != "" {
+				ServiceName := nodeInfoResponse.Path
+			}
 		}
 	}
 	
@@ -365,7 +384,11 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 	} else {
 		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
 	}
-
+	
+	
+	
+	
+	
 	nodeinfo := &api.NodeInfo{
 		NodeType:          nodeInfoResponse.Type,
 		NodeID:            c.NodeID,
@@ -377,8 +400,8 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		TLSType:           nodeInfoResponse.Security,
 		Path:              nodeInfoResponse.Path,
 		Host:              nodeInfoResponse.Host,
-		ServiceName:       nodeInfoResponse.Path,
-		HeaderType:        nodeInfoResponse.Headertype,
+		ServiceName:       ServiceName,
+		HeaderType:        HeaderType,
 		CypherMethod:      nodeInfoResponse.Method,
 	}
 
