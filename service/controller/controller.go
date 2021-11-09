@@ -216,7 +216,7 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 		if len(deleted) > 0 {
 			deletedEmail := make([]string, len(deleted))
 			for i, u := range deleted {
-				deletedEmail[i] = fmt.Sprintf("%s|%s|%d", c.Tag, u.Email, u.UID)
+				deletedEmail[i] = fmt.Sprintf("%s|%d", u.Email, u.UID)
 			}
 			err := c.removeUsers(deletedEmail, c.Tag)
 			if err != nil {
@@ -331,15 +331,15 @@ func (c *Controller) addInboundForSSPlugin(newNodeInfo api.NodeInfo) (err error)
 func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo) (err error) {
 	users := make([]*protocol.User, 0)
 	if nodeInfo.NodeType == "Vmess" {
-		users = buildVmessUser(c.Tag, userInfo, nodeInfo.AlterID)
+		users = buildVmessUser(userInfo, nodeInfo.AlterID)
 	}else if nodeInfo.NodeType == "Vless" {
-			users = buildVlessUser(c.Tag, userInfo)	
+			users = buildVlessUser( userInfo)	
 	} else if nodeInfo.NodeType == "Trojan" {
-		users = buildTrojanUser(c.Tag, userInfo)
+		users = buildTrojanUser( userInfo)
 	} else if nodeInfo.NodeType == "Shadowsocks" {
-		users = buildSSUser(c.Tag, userInfo, nodeInfo.CypherMethod)
+		users = buildSSUser( userInfo, nodeInfo.CypherMethod)
 	} else if nodeInfo.NodeType == "Shadowsocks-Plugin" {
-		users = buildSSPluginUser(c.Tag, userInfo, nodeInfo.CypherMethod)	
+		users = buildSSPluginUser( userInfo, nodeInfo.CypherMethod)	
 	} else {
 		return fmt.Errorf("Unsupported node type: %s", nodeInfo.NodeType)
 	}
