@@ -38,11 +38,11 @@ jobs:
             echo ::set-output name=ref::${{ github.sha }}
           fi
           echo ::set-output name=docker_platforms::linux/amd64
-          echo ::set-output name=docker_image::${{ secrets.DOCKER_USERNAME }}/v4
+          echo ::set-output name=docker_image::${{ secrets.DOCKER_USERNAME }}/xmanager
       - name: Build and push docker image
         run: |
           docker buildx build --platform ${{ steps.prepare.outputs.docker_platforms }} \
           --output "type=image,push=true" \
-          --tag "${{ steps.prepare.outputs.docker_image }}:xmanager" \
+          --tag "${{ steps.prepare.outputs.docker_image }}:v4" \
           --build-arg REF=${{ steps.prepare.outputs.ref }} \
           --file Dockerfile .
