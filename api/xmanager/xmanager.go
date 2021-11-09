@@ -308,12 +308,10 @@ func (c *APIClient) ReportIllegal(detectResultList *[]api.DetectResult) error {
 
 func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
 	var  enableTLS bool
-	var  TLStype, transportProtocol string
+	var  transportProtocol string
 	var  speedlimit uint64 = 0
-	var  AlterID = 0
-	
+
 	port := nodeInfoResponse.Port
-	TLSType := nodeInfoResponse.Security
 	
 	if nodeInfoResponse.Address == "" {
 		return nil, fmt.Errorf("No server address in response")
@@ -322,12 +320,10 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 	if nodeInfoResponse.Type == "Trojan" {
 		transportProtocol = "tcp"
 		if nodeInfoResponse.Security == "xtls" {
-			TLStype = "xtls"
 			enableTLS = true
 		}
 		
 		if nodeInfoResponse.Security == "tls" {
-			TLStype = "tls"
 			enableTLS = true
 		}
 		
@@ -337,17 +333,15 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 	}
 	
 	if nodeInfoResponse.Type == "Vmess" {
-		TLSType := nodeInfoResponse.Security
 		transportProtocol = nodeInfoResponse.Protocol
-		if TLStype == "tls" {
+		if nodeInfoResponse.Security == "tls" {
 			enableTLS = true
 		}
 	}	
 
-	if nodeInfoResponse.Type == "Vless" {
-		TLSType := nodeInfoResponse.Security
+	if nodeInfoResponse.Type == "Vless" {		
 		transportProtocol = nodeInfoResponse.Protocol
-		if TLStype == "tls" || TLStype == "xtls"{
+		if nodeInfoResponse.Security == "tls" || nodeInfoResponse.Security == "xtls"{
 			enableTLS = true
 		}
 	}
@@ -361,8 +355,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		if port <= 0 {
 			return nil, fmt.Errorf("Shadowsocks-Plugin listen port must be greater than 1")
 		}
-		TLSType := nodeInfoResponse.Security
-		if TLStype == "tls" {
+		if nodeInfoResponse.Security == "tls" {
 			enableTLS = true
 		}
 	}
@@ -381,7 +374,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		AlterID:           0,
 		TransportProtocol: transportProtocol,
 		EnableTLS:         enableTLS,
-		TLSType:           TLStype,
+		TLSType:           nodeInfoResponse.Security,
 		Path:              nodeInfoResponse.Path,
 		Host:              nodeInfoResponse.Host,
 		ServiceName:       nodeInfoResponse.Path,
