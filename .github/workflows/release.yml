@@ -3,7 +3,7 @@ name: Build and Release
 on:
   push:
     branches:
-      - release
+      - v4.0
 
 jobs:
 
