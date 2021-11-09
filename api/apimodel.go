@@ -31,7 +31,6 @@ type NodeInfo struct {
 	Path              string
 	EnableTLS         bool
 	TLSType           string
-	EnableVless       bool
 	CypherMethod      string
 	ServiceName       string
 	HeaderType        string
@@ -48,7 +47,7 @@ type UserInfo struct {
 	UUID          string
 	AlterID       int
 	IPcount       int
-	IPs	          string
+	IPs           string
 }
 
 type OnlineUser struct {

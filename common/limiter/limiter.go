@@ -8,6 +8,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"regexp"
 	
 	"github.com/xcode75/Xray/api"
 	"github.com/juju/ratelimit"
@@ -149,15 +150,8 @@ func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *r
 				if counter > IPcount && deviceLimit > 0 {
 				    iphash := md5.Sum([]byte(ip))
 					newip  := hex.EncodeToString(iphash[:])
-					onlineips := strings.Split(IPs, ",")
-					alivecount := 0
-					for _, alive := range onlineips {
-						if alive == newip {
-						   alivecount++
-						}
-					}
-					
-					if alivecount == 0 {
+					matched, _ := regexp.MatchString(newip, IPs)
+					if  !matched {
 						ipMap.Delete(ip)
 						return nil, false, true
 					}

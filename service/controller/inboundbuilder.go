@@ -43,11 +43,9 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 	)
 
 	var proxySetting interface{}
-	// Build Protocol and Protocol setting
-	if nodeInfo.NodeType == "V2ray" {
-		if nodeInfo.EnableVless {
+
+	if nodeInfo.NodeType == "Vless" {
 			protocol = "vless"
-			// Enable fallback
 			if config.EnableFallback {
 				fallbackConfigs, err := buildVlessFallbacks(config.FallBackConfigs)
 				if err == nil {
@@ -63,10 +61,10 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 					Decryption: "none",
 				}
 			}
-		} else {
+	} else if nodeInfo.NodeType == "Vmess" {
 			protocol = "vmess"
 			proxySetting = &conf.VMessInboundConfig{}
-		}
+		
 	} else if nodeInfo.NodeType == "Trojan" {
 		protocol = "trojan"
 		// Enable fallback
@@ -105,7 +103,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			NetworkList: []string{"tcp", "udp"},
 		}
 	}else {
-		return nil, fmt.Errorf("Unsupported node type: %s, Only support: V2ray, Trojan, Shadowsocks, and Shadowsocks-Plugin", nodeInfo.NodeType)
+		return nil, fmt.Errorf("Unsupported node type: %s", nodeInfo.NodeType)
 	}
 
 	setting, err := json.Marshal(proxySetting)
@@ -157,6 +155,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 	}
 
 	streamSetting.Network = &transportProtocol
+	
 	// Build TLS and XTLS settings
 	if nodeInfo.EnableTLS && config.CertConfig.CertMode != "none" {
 		streamSetting.Security = nodeInfo.TLSType
@@ -175,7 +174,30 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			streamSetting.XTLSSettings = xtlsSettings
 		}
 	}
-
+	
+	//Allow Insecure mode
+	if nodeInfo.TLSType == "none" {
+		streamSetting.Security = nodeInfo.TLSType
+		if nodeInfo.TLSType == "tls" {
+			tlsSettings := &conf.TLSConfig{}
+			tlsSettings.Insecure = true
+			streamSetting.TLSSettings = tlsSettings
+			
+		} else if nodeInfo.TLSType == "xtls" {
+			xtlsSettings := &conf.XTLSConfig{}
+			xtlsSettings.Insecure = true
+			streamSetting.XTLSSettings = xtlsSettings
+		}
+	}
+	
+	
+	if networkType != "tcp" && networkType != "ws" && config.EnableProxyProtocol {
+		sockoptConfig := &conf.SocketConfig{
+			AcceptProxyProtocol: config.EnableProxyProtocol,
+		}
+		streamSetting.SocketSettings = sockoptConfig
+	}
+	
 	inboundDetourConfig.Protocol = protocol
 	inboundDetourConfig.StreamSetting = streamSetting
 	inboundDetourConfig.Settings = &setting

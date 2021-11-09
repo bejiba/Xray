@@ -4,16 +4,20 @@ import "encoding/json"
 
 // NodeInfoResponse is the response of node
 type NodeInfoResponse struct {
-	Group           int     `json:"node_group"`
-	Class           int     `json:"node_class"`
-	SpeedLimit      float64  `json:"node_speedlimit"`
-	TrafficRate     float64 `json:"traffic_rate"`
+	Group           int     `json:"group"`
+	Class           int     `json:"level"`
+	SpeedLimit      float64 `json:"speedlimit"`
+	TrafficRate     float64 `json:"rate"`
 	Method		    string  `json:"method"`
 	Port		    int     `json:"port"`
-	RawServerString string  `json:"server"`
+	Address         string  `json:"server"`
 	Type            string  `json:"type"`
-	EnableVless		bool	`json:"vless"`
-	EnableXTLS		bool	`json:"xtls"`   
+	Security		bool	`json:"security"`
+	Host            string  `json:"host"`
+	Path            string  `json:"path"`
+	Headertype      string  `json:"headertype"`
+    Protocol        string  `json:"protocol"`	
+	Connectlimit    string  `json:"connectlimit"`
 }
 
 
@@ -22,12 +26,10 @@ type UserResponse struct {
 	ID            int    `json:"id"`
 	Email         string `json:"email"`
 	Passwd        string `json:"passwd"`
-	SpeedLimit    float64 `json:"node_speedlimit"`
-	DeviceLimit   int    `json:"node_connector"`
-	ForbiddenIP   string `json:"forbidden_ip"`
-	ForbiddenPort string `json:"forbidden_port"`
+	SpeedLimit    float64 `json:"speedlimit"`
+	DeviceLimit   int    `json:"connector"`
 	UUID          string `json:"uuid"`
-	IPcount       int    `json:"online_ip_count"`
+	IPcount       int    `json:"ip_count"`
 	IPs           string `json:"onlineips"`
 }
 

@@ -7,23 +7,14 @@ import (
 	"log"
 	"os"
 	"reflect"
-	"regexp"
 	"strconv"
-	"strings"
 	"time"
 
 	"github.com/xcode75/Xray/api"
 	"github.com/go-resty/resty/v2"
 )
 
-var (
-	firstPortRe   = regexp.MustCompile(`(?m)port=(?P<outside_port>\d+)#?`) // First Port
-	secondPortRe  = regexp.MustCompile(`(?m)port=\d+#(\d+)`)          // Second Port
-	hostRe        = regexp.MustCompile(`(?m)host=([\w\.]+)\|?`)       // Host
-	enableXtlsRe  = regexp.MustCompile(`(?m)enable_xtls=(\w+)\|?`)    // EnableXtls
-	enableVlessRe = regexp.MustCompile(`(?m)enable_vless=(\w+)\|?`)   // EnableVless
 
-)
 
 // APIClient create a api client to the panel.
 type APIClient struct {
@@ -139,9 +130,9 @@ func (c *APIClient) parseResponse(res *resty.Response, path string, err error) (
 	return response, nil
 }
 
-// GetNodeInfo will pull NodeInfo Config from sspanel
+// GetNodeInfo will pull NodeInfo Config from xmanager
 func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
-	path := fmt.Sprintf("/webapi/server/%d/info", c.NodeID)
+	path := fmt.Sprintf("/api/server/%d/info", c.NodeID)
 	res, err := c.client.R().
 		SetResult(&Response{}).
 		ForceContentType("application/json").
@@ -159,13 +150,11 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 	}
 	switch nodeInfoResponse.Type {
 	case "V2ray":
-		nodeInfo, err = c.ParseV2rayNodeResponse(nodeInfoResponse)
-	case "Trojan":
-		nodeInfo, err = c.ParseTrojanNodeResponse(nodeInfoResponse)
-	case "Shadowsocks":
-		nodeInfo, err = c.ParseSSNodeResponse(nodeInfoResponse)
-	case "Shadowsocks-Plugin":
-		nodeInfo, err = c.ParseSSPluginNodeResponse(nodeInfoResponse)	
+	     "Vless":
+		 "Trojan":
+		 "Shadowsocks":
+		 "Shadowsocks-Plugin":
+		nodeInfo, err = c.ParseNodeResponse(nodeInfoResponse)	
 	default:
 		return nil, fmt.Errorf("Unsupported Node type: %s", nodeInfoResponse.Type)
 	}
@@ -178,9 +167,9 @@ func (c *APIClient) GetNodeInfo() (nodeInfo *api.NodeInfo, err error) {
 	return nodeInfo, nil
 }
 
-// GetUserList will pull user form sspanel
+// GetUserList will pull user form xmanager
 func (c *APIClient) GetUserList() (UserList *[]api.UserInfo, err error) {
-	path := "/webapi/users"
+	path := "/api/users"
 	res, err := c.client.R().
 		SetQueryParam("node_id", strconv.Itoa(c.NodeID)).
 		SetResult(&Response{}).
@@ -202,9 +191,9 @@ func (c *APIClient) GetUserList() (UserList *[]api.UserInfo, err error) {
 	return userList, nil
 }
 
-// ReportNodeStatus reports the node status to the sspanel
+// ReportNodeStatus reports the node status to the xmanager
 func (c *APIClient) ReportNodeStatus(nodeStatus *api.NodeStatus) (err error) {
-	path := fmt.Sprintf("/webapi/server/%d/info", c.NodeID)
+	path := fmt.Sprintf("/api/server/%d/info", c.NodeID)
 	systemload := SystemLoad{
 		Uptime: strconv.Itoa(nodeStatus.Uptime),
 		Load:   fmt.Sprintf("%.2f %.2f %.2f", nodeStatus.CPU/100, nodeStatus.CPU/100, nodeStatus.CPU/100),
@@ -232,7 +221,7 @@ func (c *APIClient) ReportNodeOnlineUsers(onlineUserList *[]api.OnlineUser) erro
 	}
 
 	postData := &PostData{Data: data}
-	path := fmt.Sprintf("/webapi/users/aliveip")
+	path := fmt.Sprintf("/api/users/aliveip")
 	res, err := c.client.R().
 		SetQueryParam("node_id", strconv.Itoa(c.NodeID)).
 		SetBody(postData).
@@ -259,7 +248,7 @@ func (c *APIClient) ReportUserTraffic(userTraffic *[]api.UserTraffic) error {
 			Download: traffic.Download}
 	}
 	postData := &PostData{Data: data}
-	path := "/webapi/users/traffic"
+	path := "/api/users/traffic"
 	res, err := c.client.R().
 		SetQueryParam("node_id", strconv.Itoa(c.NodeID)).
 		SetBody(postData).
@@ -277,7 +266,7 @@ func (c *APIClient) ReportUserTraffic(userTraffic *[]api.UserTraffic) error {
 // GetNodeRule will pull the audit rule form sspanel
 func (c *APIClient) GetNodeRule() (*[]api.DetectRule, error) {
 	ruleList := c.LocalRuleList
-	path := "/webapi/func/detect_rules"
+	path := "/api/rules/detect_rules"
 	res, err := c.client.R().
 		SetResult(&Response{}).
 		ForceContentType("application/json").
@@ -310,7 +299,7 @@ func (c *APIClient) ReportIllegal(detectResultList *[]api.DetectResult) error {
 		}
 	}
 	postData := &PostData{Data: data}
-	path := "/webapi/users/detectlog"
+	path := "/api/users/detectlog"
 	res, err := c.client.R().
 		SetQueryParam("node_id", strconv.Itoa(c.NodeID)).
 		SetBody(postData).
@@ -324,243 +313,66 @@ func (c *APIClient) ReportIllegal(detectResultList *[]api.DetectResult) error {
 	return nil
 }
 
-// ParseV2rayNodeResponse parse the response for the given nodeinfor format
-func (c *APIClient) ParseV2rayNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
-	var enableTLS bool
-	var path, host, TLStype, transportProtocol, serviceName, HeaderType string
-	var speedlimit uint64 = 0
-	if nodeInfoResponse.RawServerString == "" {
-		return nil, fmt.Errorf("No server info in response")
-	}
-	//nodeInfo.RawServerString = strings.ToLower(nodeInfo.RawServerString)
-	serverConf := strings.Split(nodeInfoResponse.RawServerString, ";")
-	port, err := strconv.Atoi(serverConf[1])
-	if err != nil {
-		return nil, err
-	}
-	alterID, err := strconv.Atoi(serverConf[2])
-	if err != nil {
-		return nil, err
-	}
-	// Compatible with more node types config
-	for _, value := range serverConf[3:5] {
-		switch value {
-		case "tls", "xtls":
-			if nodeInfoResponse.EnableXTLS {
-				TLStype = "xtls"
-			} else {
-				TLStype = "tls"
-			}
-			enableTLS = true
-		default:
-			if value != "" {
-				transportProtocol = value
-			}
-		}
-	}
-	extraServerConf := strings.Split(serverConf[5], "|")
-	HeaderType = "none"
-	for _, item := range extraServerConf {
-		conf := strings.Split(item, "=")
-		key := conf[0]
-		if key == "" {
-			continue
-		}
-		value := conf[1]
-		switch key {
-		case "path":
-			rawPath := strings.Join(conf[1:], "=") // In case of the path strings contains the "="
-			path = rawPath
-		case "host":
-			host = value
-		case "servicename":
-			serviceName = value	
-		case "headertype":
-			HeaderType = value
-		}
-	}
-	
-	
-	
-	if c.SpeedLimit > 0 {
-		speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
-	} else {
-		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
-	}
 
+func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
+	var  enableTLS bool
+	var  TLStype, transportProtocol string
+	var  speedlimit uint64 = 0
+	var  AlterID = 0
 	
-	// Create GeneralNodeInfo
-	nodeinfo := &api.NodeInfo{
-		NodeType:          nodeInfoResponse.Type,
-		NodeID:            c.NodeID,
-		Port:              port,
-		SpeedLimit:        speedlimit,
-		AlterID:           alterID,
-		TransportProtocol: transportProtocol,
-		EnableTLS:         enableTLS,
-		TLSType:           TLStype,
-		Path:              path,
-		Host:              host,
-		EnableVless:       nodeInfoResponse.EnableVless,
-		ServiceName:       serviceName,
-		HeaderType:        HeaderType,
-	}
-
-	return nodeinfo, nil
-}
-
-// ParseSSNodeResponse parse the response for the given nodeinfor format
-func (c *APIClient) ParseSSNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
-	var speedlimit uint64 = 0
-	method := nodeInfoResponse.Method
 	port := nodeInfoResponse.Port
-	if port == 0 || method == "" {
-		return nil, fmt.Errorf("Cant find the single port multi user")
-	}
-
-	if c.SpeedLimit > 0 {
-		speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
-	} else {
-		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
-	}
-	// Create GeneralNodeInfo
-	nodeinfo := &api.NodeInfo{
-		NodeType:          nodeInfoResponse.Type,
-		NodeID:            c.NodeID,
-		Port:              port,
-		SpeedLimit:        speedlimit,
-		TransportProtocol: "tcp",
-		CypherMethod:      method,
-		HeaderType:        "none",
-	}
-
-	return nodeinfo, nil
-}
-
-
-// ParseSSPluginNodeResponse parse the response for the given nodeinfor format
-func (c *APIClient) ParseSSPluginNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
-	var enableTLS bool
-	var path, host, TLStype, transportProtocol string
-	var speedlimit uint64 = 0
-	method := nodeInfoResponse.Method
-	serverConf := strings.Split(nodeInfoResponse.RawServerString, ";")
-	//port, err := strconv.Atoi(serverConf[1])
-	port := nodeInfoResponse.Port
-	if port <= 0 {
-		return nil, fmt.Errorf("Please update port")
-	}
-	port = port - 1 // Shadowsocks-Plugin requires two ports, one for ss the other for other stream protocol
-	if port <= 0 {
-		return nil, fmt.Errorf("Shadowsocks-Plugin listen port must bigger than 1")
-	}
-
-	// Compatible with more node types config
-	for _, value := range serverConf[3:5] {
-		switch value {
-		case "tls", "xtls":
-			if nodeInfoResponse.EnableXTLS {
-				TLStype = "xtls"
-			} else {
-				TLStype = "tls"
-			}
-			enableTLS = true
-		case "ws":
-			transportProtocol = "ws"
-		case "obfs":
-			transportProtocol = "tcp"
-		}
-	}
-	extraServerConf := strings.Split(serverConf[5], "|")
-	for _, item := range extraServerConf {
-		conf := strings.Split(item, "=")
-		key := conf[0]
-		if key == "" {
-			continue
-		}
-		value := conf[1]
-		switch key {
-		case "path":
-			rawPath := strings.Join(conf[1:], "=") // In case of the path strings contains the "="
-			path = rawPath
-		case "host":
-			host = value
-		}
-	}
-	if c.SpeedLimit > 0 {
-		speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
-	} else {
-		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
-	}
-
-	// Create GeneralNodeInfo
-	nodeinfo := &api.NodeInfo{
-		NodeType:          nodeInfoResponse.Type,
-		NodeID:            c.NodeID,
-		Port:              port,
-		SpeedLimit:        speedlimit,
-		TransportProtocol: transportProtocol,
-		EnableTLS:         enableTLS,
-		TLSType:           TLStype,
-		Path:              path,
-		Host:              host,
-		CypherMethod:      method,
-		HeaderType:        "none",
-	}
-
-	return nodeinfo, nil
-}
-
-
-// ParseTrojanNodeResponse parse the response for the given nodeinfor format
-func (c *APIClient) ParseTrojanNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.NodeInfo, error) {
-	var p, TLSType, host, outsidePort, insidePort, transportProtocol, serviceName string
-	var speedlimit uint64 = 0
-	if nodeInfoResponse.EnableXTLS {
-		TLSType = "xtls"
-	} else {
-		TLSType = "tls"
-	}
-
-	if nodeInfoResponse.RawServerString == "" {
-		return nil, fmt.Errorf("No server info in response")
-	}
-	if result := firstPortRe.FindStringSubmatch(nodeInfoResponse.RawServerString); len(result) > 1 {
-		outsidePort = result[1]
-	}
-	if result := secondPortRe.FindStringSubmatch(nodeInfoResponse.RawServerString); len(result) > 1 {
-		insidePort = result[1]
-	}
-	if result := hostRe.FindStringSubmatch(nodeInfoResponse.RawServerString); len(result) > 1 {
-		host = result[1]
-	}
-
-	if insidePort != "" {
-		p = insidePort
-	} else {
-		p = outsidePort
-	}
-
-	port, err := strconv.Atoi(p)
-	if err != nil {
-		return nil, err
-	}	
+	EnableVless = false
+	TLSType = nodeInfoResponse.Security
 	
-	serverConf := strings.Split(nodeInfoResponse.RawServerString, ";")
-	extraServerConf := strings.Split(serverConf[1], "|")
-	transportProtocol = "tcp"
-	for _, item := range extraServerConf {
-		conf := strings.Split(item, "=")
-		key := conf[0]
-		if key == "" {
-			continue
+	if nodeInfoResponse.Address == "" {
+		return nil, fmt.Errorf("No server address in response")
+	}
+
+	if nodeInfoResponse.Type == "Trojan" {
+		transportProtocol = "tcp"
+		if nodeInfoResponse.Security == "xtls" {
+			TLStype = "xtls"
+			enableTLS = true
 		}
-		value := conf[1]
-		switch key {
-		case "grpc":
+		
+		if nodeInfoResponse.Security == "tls" {
+			TLStype = "tls"
+			enableTLS = true
+		}
+		
+		if nodeInfoResponse.Protocol == "grpc" {
 			transportProtocol = "grpc"
-		case "servicename":
-			serviceName = value
+		}
+	}
+	
+	if nodeInfoResponse.Type == "Vmess" {
+		TLSType := nodeInfoResponse.Security
+		transportProtocol = nodeInfoResponse.Protocol
+		if TLStype == "tls" {
+			enableTLS = true
+		}
+	}	
+
+	if nodeInfoResponse.Type == "Vless" {
+		TLSType := nodeInfoResponse.Security
+		transportProtocol = nodeInfoResponse.Protocol
+		if TLStype == "tls" || TLStype == "xtls"{
+			enableTLS = true
+		}
+	}
+	
+	if nodeInfoResponse.Type == "Shadowsocks" {
+		transportProtocol = "tcp"
+	}
+	
+	if nodeInfoResponse.Type == "Shadowsocks-Plugin" {
+		port = port - 1
+		if port <= 0 {
+			return nil, fmt.Errorf("Shadowsocks-Plugin listen port must be greater than 1")
+		}
+		TLSType := nodeInfoResponse.Security
+		if TLStype == "tls" {
+			enableTLS = true
 		}
 	}
 	
@@ -569,24 +381,27 @@ func (c *APIClient) ParseTrojanNodeResponse(nodeInfoResponse *NodeInfoResponse) 
 	} else {
 		speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
 	}
-	// Create GeneralNodeInfo
+
 	nodeinfo := &api.NodeInfo{
 		NodeType:          nodeInfoResponse.Type,
 		NodeID:            c.NodeID,
 		Port:              port,
 		SpeedLimit:        speedlimit,
+		AlterID:           0,
 		TransportProtocol: transportProtocol,
-		EnableTLS:         true,
-		TLSType:           TLSType,
-		Host:              host,
-		ServiceName:       serviceName,
-		HeaderType:        "none",
+		EnableTLS:         enableTLS,
+		TLSType:           TLStype,
+		Path:              nodeInfoResponse.Path,
+		Host:              nodeInfoResponse.Host,
+		ServiceName:       nodeInfoResponse.Path,
+		HeaderType:        nodeInfoResponse.Headertype,
+		CypherMethod:      nodeInfoResponse.Method,
 	}
 
 	return nodeinfo, nil
 }
 
-// ParseUserListResponse parse the response for the given nodeinfo format
+
 func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]api.UserInfo, error) {
 
 	var deviceLimit, onlintipcount int = 0, 0
