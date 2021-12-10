@@ -2,12 +2,9 @@
 package limiter
 
 import (
-	"crypto/md5"
-	"encoding/hex"
 	"fmt"
 	"sync"
 	"time"
-	"regexp"
 	
 	"github.com/xcode75/Xray/api"
 	"github.com/juju/ratelimit"
@@ -17,8 +14,6 @@ type UserInfo struct {
 	UID         int
 	SpeedLimit  uint64
 	DeviceLimit int
-	IPcount     int
-	IPs	        string
 }
 
 type InboundInfo struct {
@@ -52,8 +47,6 @@ func (l *Limiter) AddInboundLimiter(tag string, nodeSpeedLimit uint64, userList 
 			UID:         u.UID,
 			SpeedLimit:  u.SpeedLimit,
 			DeviceLimit: u.DeviceLimit,
-			IPcount:     u.IPcount,
-			IPs:         u.IPs,
 		})
 	}
 	inboundInfo.UserInfo = userMap
@@ -71,8 +64,6 @@ func (l *Limiter) UpdateInboundLimiter(tag string, updatedUserList *[]api.UserIn
 				UID:         u.UID,
 				SpeedLimit:  u.SpeedLimit,
 				DeviceLimit: u.DeviceLimit,
-				IPcount:     u.IPcount,
-				IPs:         u.IPs,
 			})
 			inboundInfo.BucketHub.Delete(fmt.Sprintf("%s|%s|%d", tag, u.Email, u.UID)) // Delete old limiter bucket
 		}
@@ -122,16 +113,13 @@ func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *r
 		inboundInfo := value.(*InboundInfo)
 		nodeLimit := inboundInfo.NodeSpeedLimit
 		var userLimit uint64 = 0
-		var deviceLimit,IPcount int = 0,0
+		var deviceLimit int = 0
 		var uid int = 0
-		var IPs string
 		if v, ok := inboundInfo.UserInfo.Load(email); ok {
 			u := v.(UserInfo)
 			uid = u.UID
 			userLimit = u.SpeedLimit
 			deviceLimit = u.DeviceLimit
-			IPcount =     u.IPcount
-			IPs =         u.IPs
 		}
 		// Report online device
 		ipMap := new(sync.Map)
@@ -146,15 +134,10 @@ func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *r
 					counter++
 					return true
 				})
-				if counter > IPcount && deviceLimit > 0 {
-				    iphash := md5.Sum([]byte(ip))
-					newip  := hex.EncodeToString(iphash[:])
-					matched, _ := regexp.MatchString(newip, IPs)
-					if  !matched {
-						ipMap.Delete(ip)
-						return nil, false, true
-					}
-				}
+				if counter > deviceLimit && deviceLimit > 0 {
+					ipMap.Delete(ip)
+					return nil, false, true
+				}	
 			}
 		}
 		limit := determineRate(nodeLimit, userLimit) // If need the Speed limit

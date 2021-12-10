@@ -48,7 +48,6 @@ type UserInfo struct {
 	UUID          string
 	AlterID       int
 	IPcount       int
-	IPs           string
 }
 
 type OnlineUser struct {

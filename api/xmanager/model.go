@@ -4,10 +4,7 @@ import "encoding/json"
 
 // NodeInfoResponse is the response of node
 type NodeInfoResponse struct {
-	Group           int     `json:"group"`
-	Class           int     `json:"level"`
 	SpeedLimit      float64 `json:"speedlimit"`
-	TrafficRate     float64 `json:"rate"`
 	Method		    string  `json:"method"`
 	Port		    int     `json:"port"`
 	Address         string  `json:"server"`
@@ -17,7 +14,6 @@ type NodeInfoResponse struct {
 	Path            string  `json:"path"`
 	Headertype      string  `json:"headertype"`
     Protocol        string  `json:"protocol"`	
-	Connectlimit    int     `json:"connectlimit"`
 	AllowInsecure   bool    `json:"allowinsecure"`
 }
 
@@ -31,7 +27,6 @@ type UserResponse struct {
 	DeviceLimit   int    `json:"connector"`
 	UUID          string `json:"uuid"`
 	IPcount       int    `json:"ip_count"`
-	IPs           string `json:"onlineips"`
 }
 
 // Response is the common response

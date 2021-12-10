@@ -416,9 +416,13 @@ func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]
 		} else {
 			deviceLimit = user.DeviceLimit
 		}
-				
-		if c.DeviceLimit > 0 {
-			onlintipcount = deviceLimit - user.IPcount
+		
+		if deviceLimit > 0 {
+			if onlintipcount = deviceLimit - user.IPcount; onlintipcount < 0 {
+				continue
+			}else {
+				deviceLimit = onlintipcount
+			}
 		}
 		
 		if c.SpeedLimit > 0 {
@@ -434,8 +438,6 @@ func (c *APIClient) ParseUserListResponse(userInfoResponse *[]UserResponse) (*[]
 			Passwd:        user.Passwd,
 			SpeedLimit:    speedlimit,
 			DeviceLimit:   deviceLimit,
-			IPcount:       onlintipcount,
-			IPs:           user.IPs,
 		})
 	}
 
