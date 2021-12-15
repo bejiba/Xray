@@ -47,6 +47,8 @@ func New(apiConfig *api.Config) *APIClient {
 	client.SetHostURL(apiConfig.APIHost)
 	// Create Key for each requests
 	client.SetQueryParam("key", apiConfig.Key)
+	// Add support for muKey
+	client.SetQueryParam("muKey", apiConfig.Key)
 	// Read local rule list
 	localRuleList := readLocalRuleList(apiConfig.RuleListPath)
 	apiClient := &APIClient{
@@ -372,15 +374,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		if nodeInfoResponse.Security == "tls" {
 			enableTLS = true
 		}
-	}
-	
-	if transportProtocol != "tcp" && nodeInfoResponse.Security == "xtls"{
-		return nil, fmt.Errorf("xtls only support TCP for Trojan and Vless")
-	}
-	
-	if nodeInfoResponse.Type != "Trojan" || nodeInfoResponse.Type != "Vless" && nodeInfoResponse.Security == "xtls"{
-		return nil, fmt.Errorf("xtls only support TCP for Trojan and Vless")
-	}
+	}	
 		
 	if c.SpeedLimit > 0 {
 		speedlimit = uint64((c.SpeedLimit * 1000000) / 8)
