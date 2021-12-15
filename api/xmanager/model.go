@@ -27,6 +27,7 @@ type UserResponse struct {
 	DeviceLimit   int    `json:"connector"`
 	UUID          string `json:"uuid"`
 	IPcount       int    `json:"ip_count"`
+	LimitType     int    `json:"limit_type"`
 }
 
 // Response is the common response

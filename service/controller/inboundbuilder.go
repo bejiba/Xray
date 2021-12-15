@@ -20,15 +20,17 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 	if config.ListenIP != "" {
 		ipAddress := net.ParseAddress(config.ListenIP)
 		inboundDetourConfig.ListenOn = &conf.Address{ipAddress}
-	}else{
+	} else {
 		inboundDetourConfig.ListenOn = &conf.Address{net.ParseAddress("0.0.0.0")}
 	}
 
 	// Build Port
 	portRange := &conf.PortRange{From: uint32(nodeInfo.Port), To: uint32(nodeInfo.Port)}
 	inboundDetourConfig.PortRange = portRange
+
 	// Build Tag
 	inboundDetourConfig.Tag = fmt.Sprintf("%s|%d|%d", nodeInfo.NodeType, nodeInfo.Port, nodeInfo.NodeID)
+
 	// SniffingConfig
 	sniffingConfig := &conf.SniffingConfig{
 		Enabled:      true,
@@ -45,26 +47,26 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 	var proxySetting interface{}
 
 	if nodeInfo.NodeType == "Vless" {
-			protocol = "vless"
-			if config.EnableFallback {
-				fallbackConfigs, err := buildVlessFallbacks(config.FallBackConfigs)
-				if err == nil {
-					proxySetting = &conf.VLessInboundConfig{
-						Decryption: "none",
-						Fallbacks:  fallbackConfigs,
-					}
-				} else {
-					return nil, err
-				}
-			} else {
+		protocol = "vless"
+		if config.EnableFallback {
+			fallbackConfigs, err := buildVlessFallbacks(config.FallBackConfigs)
+			if err == nil {
 				proxySetting = &conf.VLessInboundConfig{
 					Decryption: "none",
+					Fallbacks:  fallbackConfigs,
 				}
+			} else {
+				return nil, err
 			}
+		} else {
+			proxySetting = &conf.VLessInboundConfig{
+				Decryption: "none",
+			}
+		}
 	} else if nodeInfo.NodeType == "Vmess" {
-			protocol = "vmess"
-			proxySetting = &conf.VMessInboundConfig{}
-		
+		protocol = "vmess"
+		proxySetting = &conf.VMessInboundConfig{}
+
 	} else if nodeInfo.NodeType == "Trojan" {
 		protocol = "trojan"
 		// Enable fallback
@@ -102,7 +104,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			Redirect:    false,
 			NetworkList: []string{"tcp", "udp"},
 		}
-	}else {
+	} else {
 		return nil, fmt.Errorf("Unsupported node type: %s", nodeInfo.NodeType)
 	}
 
@@ -122,7 +124,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 		headers := make(map[string]string)
 		headers["type"] = nodeInfo.HeaderType
 		var header json.RawMessage
-		header, err  := json.Marshal(headers)
+		header, err := json.Marshal(headers)
 		if err != nil {
 			return nil, fmt.Errorf("Marshal Header Type %s into config fialed: %s", header, err)
 		}
@@ -147,7 +149,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			Path: nodeInfo.Path,
 		}
 		streamSetting.HTTPSettings = httpSettings
-	}else if networkType == "grpc" {
+	} else if networkType == "grpc" {
 		grpcSettings := &conf.GRPCConfig{
 			ServiceName: nodeInfo.ServiceName,
 		}
@@ -155,7 +157,7 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 	}
 
 	streamSetting.Network = &transportProtocol
-	
+
 	// Build TLS and XTLS settings
 	if nodeInfo.EnableTLS && config.CertConfig.CertMode != "none" {
 		streamSetting.Security = nodeInfo.TLSType
@@ -179,15 +181,14 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			streamSetting.XTLSSettings = xtlsSettings
 		}
 	}
-	
-	
+
 	if networkType != "tcp" && networkType != "ws" && config.EnableProxyProtocol {
 		sockoptConfig := &conf.SocketConfig{
 			AcceptProxyProtocol: config.EnableProxyProtocol,
 		}
 		streamSetting.SocketSettings = sockoptConfig
 	}
-	
+
 	inboundDetourConfig.Protocol = protocol
 	inboundDetourConfig.StreamSetting = streamSetting
 	inboundDetourConfig.Settings = &setting
@@ -255,7 +256,7 @@ func buildVlessFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.VLessInboun
 func buildTrojanFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.TrojanInboundFallback, error) {
 	if fallbackConfigs == nil {
 		return nil, fmt.Errorf("You must provide FallBackConfigs")
-	}	
+	}
 	trojanFallBacks := make([]*conf.TrojanInboundFallback, len(fallbackConfigs))
 	for i, c := range fallbackConfigs {
 
