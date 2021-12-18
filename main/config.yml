@@ -1,0 +1,48 @@
+Log:
+  Level: info # Log level: none, error, warning, info, debug
+  AccessPath: #/etc/Xray/access.Log 
+  ErrorPath: #/etc/Xray/error.log
+DnsConfigPath: /etc/Xray/dns.json               #https://xtls.github.io/config/base/dns/
+RouteConfigPath: # /etc/Xray/route.json         #https://xtls.github.io/config/base/route/
+OutboundConfigPath: # /etc/Xray/outbound.json   #https://xtls.github.io/config/base/outbound/
+ConnetionConfig:
+  Handshake: 4 
+  ConnIdle: 300 
+  UplinkOnly: 0 
+  DownlinkOnly: 0 
+  BufferSize: 64 
+Nodes:  
+  -
+    ApiConfig:
+      ApiHost: "https://www.xx.com"
+      ApiKey: "xxx"
+      NodeID: 2 
+      Timeout: 30  
+      DeviceLimit: 0 # Local settings will replace remote settings, 0 means disable
+      RuleListPath: #/etc/Xray/rulelist #Path to local rulelist file
+    ControllerConfig:
+      SendIP: 0.0.0.0 # IP address you want to send pacakage
+      UpdatePeriodic: 60 # Time to update the nodeinfo, how many sec.
+      EnableDNS: true # Use custom DNS config, Please ensure that you set the dns.json well
+      DisableUploadTraffic: false      
+      DisableGetRule: false   
+      DisableIVCheck:  false     
+      DNSType: AsIs # AsIs, UseIP, UseIPv4, UseIPv6, DNS strategy
+      EnableProxyProtocol: false # Only works for WebSocket and TCP
+      EnableFallback: false # Only support for Trojan and Vless
+      FallBackConfigs:  # Support multiple fallbacks
+        -
+          SNI: # TLS SNI(Server Name Indication), Empty for any
+          Path: # HTTP PATH, Empty for any
+          Dest: 80 # Required, Destination of fallback, check https://xtls.github.io/config/fallback/ for details.
+          ProxyProtocolVer: 0 # Send PROXY protocol version, 0 for dsable
+      CertConfig:
+        CertMode: http # none, file, http, dns
+        CertDomain: "uk1.xx.com" # Domain to cert
+        CertFile: /etc/Xray/uk1.xx.com.crt
+        KeyFile: /etc/Xray/uk1.xx.com.key
+        Email: xxx@gmail.com
+        Provider: cloudflare                 # https://go-acme.github.io/lego/dns/
+        DNSEnv: 
+          CLOUDFLARE_EMAIL: 
+          CLOUDFLARE_API_KEY: 
