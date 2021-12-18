@@ -1,0 +1,48 @@
+on: 
+  push:
+    branches:
+      - dev
+  release:
+    types:
+      - created
+      
+name: docker-build
+jobs:
+  build:
+    if: github.repository == 'xcode75/Xray'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Setup QEMU
+        uses: docker/setup-qemu-action@v1
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: Login to Docker Hub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Prepare
+        id: prepare
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            echo ::set-output name=version::${GITHUB_REF#refs/tags/}
+            echo ::set-output name=ref::${GITHUB_REF#refs/tags/}
+          else
+            echo ::set-output name=version::snapshot
+            echo ::set-output name=ref::${{ github.sha }}
+          fi
+          echo ::set-output name=docker_platforms::linux/amd64
+          echo ::set-output name=docker_image::${{ secrets.DOCKER_USERNAME }}/xray
+      - name: Build and push docker image
+        run: |
+          docker buildx build --platform ${{ steps.prepare.outputs.docker_platforms }} \
+          --output "type=image,push=true" \
+          --tag "${{ steps.prepare.outputs.docker_image }}:v0.7.3.0" \
+          --build-arg REF=${{ steps.prepare.outputs.ref }} \
+          --file Dockerfile .
