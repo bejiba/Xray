@@ -206,7 +206,7 @@ func OutRelayboundBuilder(config *Config, nodeInfo *api.RelayNodeInfo ,UUID stri
 				return nil, fmt.Errorf("Marshal Header Type %s into config fialed: %s", header, err)
 			}		
 			tcpSetting := &conf.TCPConfig{
-				AcceptProxyProtocol: config.EnableProxyProtocol,
+				AcceptProxyProtocol: nodeInfo.ProxyProtocol,
 				HeaderConfig:        header,
 			}
 			streamSetting.TCPSettings = tcpSetting
@@ -214,7 +214,7 @@ func OutRelayboundBuilder(config *Config, nodeInfo *api.RelayNodeInfo ,UUID stri
 			headers := make(map[string]string)
 			headers["Host"] = nodeInfo.Host
 			wsSettings := &conf.WebSocketConfig{
-				AcceptProxyProtocol: config.EnableProxyProtocol,
+				AcceptProxyProtocol: nodeInfo.ProxyProtocol,
 				Path:                nodeInfo.Path,
 				Headers:             headers,
 			}

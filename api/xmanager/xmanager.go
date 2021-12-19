@@ -391,6 +391,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		AllowInsecure:     nodeInfoResponse.AllowInsecure,
 		Relay:             nodeInfoResponse.Relay,
 		ListenIP:          nodeInfoResponse.ListenIP,
+		ProxyProtocol:     nodeInfoResponse.ProxyProtocol,
 	}
 
 	return nodeinfo, nil
@@ -559,6 +560,7 @@ func (c *APIClient) ParseRelayNodeResponse(nodeInfoResponse *RelayNodeInfoRespon
 		AllowInsecure:     nodeInfoResponse.AllowInsecure,
 		Address:           nodeInfoResponse.Address,
 		ListenIP:          nodeInfoResponse.ListenIP,
+		ProxyProtocol:     nodeInfoResponse.ProxyProtocol,
 	}
 
 	return nodeinfo, nil

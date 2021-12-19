@@ -37,6 +37,7 @@ type NodeInfo struct {
 	AllowInsecure     bool
 	Relay			  int
 	ListenIP          string
+	ProxyProtocol     bool
 }
 
 type RelayNodeInfo struct {
@@ -57,6 +58,7 @@ type RelayNodeInfo struct {
 	Address           string
 	Relay			  int
 	ListenIP          string
+	ProxyProtocol     bool
 }
 
 type UserInfo struct {

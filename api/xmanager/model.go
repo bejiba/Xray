@@ -18,6 +18,7 @@ type NodeInfoResponse struct {
 	Relay			int     `json:"relay"`
 	RelayNodeID		int     `json:"relayid"`
 	ListenIP        string  `json:"listenip"`
+	ProxyProtocol   bool    `json:"proxyprotocol"`
 }
 
 type RelayNodeInfoResponse struct {
@@ -35,6 +36,7 @@ type RelayNodeInfoResponse struct {
 	Relay			int     `json:"relay"`
 	RelayNodeID		int     `json:"relayid"`
 	ListenIP        string  `json:"listenip"`
+	ProxyProtocol   bool    `json:"proxyprotocol"`
 }
 
 // UserResponse is the response of user
