@@ -1,4 +1,4 @@
-name: docker-build
+name: docker-build-2
 on: 
   push:
     branches:
@@ -38,5 +38,5 @@ jobs:
           context: .
           platforms: linux/arm/386,linux/amd64
           push: ${{ github.event_name != 'pull_request' }}
-          tags: v0.7.3.1
+          tags: ${{ steps.docker_meta.outputs.tags }}
           labels: ${{ steps.docker_meta.outputs.labels }}
