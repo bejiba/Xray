@@ -38,6 +38,7 @@ type NodeInfo struct {
 	Relay			  int
 	ListenIP          string
 	ProxyProtocol     bool
+	Sniffing          bool
 }
 
 type RelayNodeInfo struct {
@@ -59,6 +60,7 @@ type RelayNodeInfo struct {
 	Relay			  int
 	ListenIP          string
 	ProxyProtocol     bool
+	Sniffing          bool
 }
 
 type UserInfo struct {

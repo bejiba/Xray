@@ -10,7 +10,6 @@ type Config struct {
 	DisableGetRule      bool              `mapstructure:"DisableGetRule"`
 	EnableFallback      bool              `mapstructure:"EnableFallback"`
 	DisableIVCheck      bool              `mapstructure:"DisableIVCheck"`
-	DisableSniffing     bool              `mapstructure:"DisableSniffing"`
 	FallBackConfigs     []*FallBackConfig `mapstructure:"FallBackConfigs"`
 }
 

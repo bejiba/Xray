@@ -27,7 +27,6 @@ Nodes:
       DisableUploadTraffic: false                                # Disable Upload traffic stats to panel 
       DisableGetRule: false                                      # Disable Get rule from panel
       DisableIVCheck:  false                                     # Disable Shadowsoocks IVCheck
-      DisableSniffing: false                                     # Disable Sniffing
       DNSType: AsIs                                              # AsIs, UseIP, UseIPv4, UseIPv6, DNS strategy
       EnableFallback: false                                      # Only support for Trojan and Vless
       FallBackConfigs:                                           # Support multiple fallbacks

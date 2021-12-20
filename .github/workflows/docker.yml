@@ -43,6 +43,6 @@ jobs:
         run: |
           docker buildx build --platform ${{ steps.prepare.outputs.docker_platforms }} \
           --output "type=image,push=true" \
-          --tag "${{ steps.prepare.outputs.docker_image }}:v0.7.3.0" \
+          --tag "${{ steps.prepare.outputs.docker_image }}:v0.7.3.1" \
           --build-arg REF=${{ steps.prepare.outputs.ref }} \
           --file Dockerfile .
