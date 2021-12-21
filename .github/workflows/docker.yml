@@ -2,9 +2,6 @@ on:
   push:
     branches:
       - dev
-  release:
-    types:
-      - created
       
 name: docker-build
 jobs:
@@ -43,6 +40,6 @@ jobs:
         run: |
           docker buildx build --platform ${{ steps.prepare.outputs.docker_platforms }} \
           --output "type=image,push=true" \
-          --tag "${{ steps.prepare.outputs.docker_image }}:v0.7.3.1" \
+          --tag "${{ steps.prepare.outputs.docker_image }}:${{ steps.prepare.outputs.ref }}" \
           --build-arg REF=${{ steps.prepare.outputs.ref }} \
           --file Dockerfile .

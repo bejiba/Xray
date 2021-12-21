@@ -1,16 +1,17 @@
 name: Build and Release
-
 on:
   push:
     branches:
       - dev
+  release:
+    types:
+      - created
 
 jobs:
 
   build:
     strategy:
       matrix:
-        # Include amd64 on all platforms.
         goos: [linux]
         goarch: [amd64, 386]
         include:
