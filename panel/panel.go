@@ -177,6 +177,7 @@ func (p *Panel) Close() {
 			log.Panicf("Panel Close fialed: %s", err)
 		}
 	}
+	p.Service = nil
 	p.Server.Close()
 	p.Running = false
 	return
