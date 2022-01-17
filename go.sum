@@ -882,7 +882,7 @@ github.com/xeipuuv/gojsonschema v1.2.0/go.mod h1:anYRn/JVcOK2ZgGU+IjEV4nwlhoK5sQ
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
 github.com/xtls/go v0.0.0-20210920065950-d4af136d3672 h1:4mkzGhKqt3JO1BWYjtD3iRFyAx4ow67hmSqOcGjuxqQ=
 github.com/xtls/go v0.0.0-20210920065950-d4af136d3672/go.mod h1:YGGVbz9cOxyKFUmhW7LGaLZaMA0cPlHJinvAmVxEMSU=
-github.com/xcode75/xraycore v1.5.2 h1:Ln7zjftpp2Ya8XG7BDiJ8TBwzVIw5DzGDfX6sj0/cBE=
+github.com/xcode75/xraycore v1.5.2 h1:PudlROatJgPC3edN+dNvuqPt9CumMtdTHxctInfilZg=
 github.com/xcode75/xraycore v1.5.2/go.mod h1:Bxcd3dWdvHxPobiCKJc5lrp0yQfVi6ZCvzoJS8ii170=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
