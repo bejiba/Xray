@@ -5,13 +5,13 @@ import (
 	"fmt"
 
 	"github.com/xcode75/Xray/api"
-	"github.com/xcode75/xray-core/common/net"
-	"github.com/xcode75/xray-core/core"
-	"github.com/xcode75/xray-core/infra/conf"
+	"github.com/xcode75/xraycore/common/net"
+	"github.com/xcode75/xraycore/core"
+	"github.com/xcode75/xraycore/infra/conf"
 	
-	"github.com/xcode75/xray-core/common/protocol"
-	"github.com/xcode75/xray-core/common/serial"
-    "github.com/xcode75/xray-core/proxy/vless"
+	"github.com/xcode75/xraycore/common/protocol"
+	"github.com/xcode75/xraycore/common/serial"
+    "github.com/xcode75/xraycore/proxy/vless"
 )
 
 //OutboundBuilder build freedom outbund config for addoutbound

@@ -9,9 +9,9 @@ import (
 	"github.com/xcode75/Xray/api"
 	"github.com/xcode75/Xray/common/legocmd"
 	"github.com/xcode75/Xray/common/serverstatus"
-	"github.com/xcode75/xray-core/common/protocol"
-	"github.com/xcode75/xray-core/common/task"
-	"github.com/xcode75/xray-core/core"
+	"github.com/xcode75/xraycore/common/protocol"
+	"github.com/xcode75/xraycore/common/task"
+	"github.com/xcode75/xraycore/core"
 
 )
 
