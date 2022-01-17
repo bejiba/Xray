@@ -162,9 +162,9 @@ func (l *Limiter) GetUserBucket(tag string, email string, ip string) (limiter *r
 func determineRate(nodeLimit, userLimit uint64) (limit uint64) {
 	if nodeLimit == 0 || userLimit == 0 {
 		if nodeLimit > userLimit {
-			return nodeLimit
-		} else if nodeLimit < userLimit {
 			return userLimit
+		} else if nodeLimit < userLimit {
+			return nodeLimit
 		} else {
 			return 0
 		}
@@ -174,7 +174,7 @@ func determineRate(nodeLimit, userLimit uint64) (limit uint64) {
 		} else if nodeLimit < userLimit {
 			return nodeLimit
 		} else {
-			return nodeLimit
+			return userLimit
 		}
 	}
 }
