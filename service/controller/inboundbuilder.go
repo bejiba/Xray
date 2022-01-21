@@ -159,11 +159,6 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			ServiceName: nodeInfo.ServiceName,
 		}
 		streamSetting.GRPCConfig = grpcSettings
-	}else if networkType == "kcp" {
-		kcpSettings := &conf.KCPConfig{
-			Seed: &nodeInfo.Key,
-		}
-		streamSetting.KCPSettings = kcpSettings
 	}else if networkType == "quic" {
 		headers := make(map[string]string)
 		headers["type"] = nodeInfo.HeaderType
@@ -174,8 +169,8 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 		}
 		quicSettings := &conf.QUICConfig{
 			Header:        header,
-			Security: nodeInfo.CypherMethod,
-			Key:  nodeInfo.Key,
+			Security: nodeInfo.QuicSecurity,
+			Key:  nodeInfo.QuicKey,
 		}
 		streamSetting.QUICSettings = quicSettings
 	}
