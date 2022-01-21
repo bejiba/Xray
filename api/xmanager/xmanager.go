@@ -325,6 +325,10 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 				ServiceName = nodeInfoResponse.Path
 			}
 		}
+		
+		if nodeInfoResponse.Protocol == "ws" {
+			transportProtocol = "ws"
+		}
 	}
 	
 	if nodeInfoResponse.Type == "Vmess" {
@@ -368,6 +372,13 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		if nodeInfoResponse.Security == "tls" {
 			enableTLS = true
 		}
+		
+		if nodeInfoResponse.Protocol == "grpc" {
+			transportProtocol = "grpc"
+			if nodeInfoResponse.Path != "" {
+				ServiceName = nodeInfoResponse.Path
+			}
+		}
 	}
 		
 	speedlimit = uint64((nodeInfoResponse.SpeedLimit * 1000000) / 8)
@@ -386,6 +397,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		ServiceName:       ServiceName,
 		HeaderType:        HeaderType,
 		CypherMethod:      nodeInfoResponse.Method,
+		CypherKey:         nodeInfoResponse.QuicKey,
 		AllowInsecure:     nodeInfoResponse.AllowInsecure,
 		Relay:             nodeInfoResponse.Relay,
 		ListenIP:          nodeInfoResponse.ListenIP,
@@ -494,6 +506,9 @@ func (c *APIClient) ParseRelayNodeResponse(nodeInfoResponse *RelayNodeInfoRespon
 				ServiceName = nodeInfoResponse.Path
 			}
 		}
+		if nodeInfoResponse.Protocol == "ws" {
+			transportProtocol = "ws"
+		}
 	}
 	
 	if nodeInfoResponse.Type == "Vmess" {
@@ -537,6 +552,12 @@ func (c *APIClient) ParseRelayNodeResponse(nodeInfoResponse *RelayNodeInfoRespon
 		if nodeInfoResponse.Security == "tls" {
 			enableTLS = true
 		}
+		if nodeInfoResponse.Protocol == "grpc" {
+			transportProtocol = "grpc"
+			if nodeInfoResponse.Path != "" {
+				ServiceName = nodeInfoResponse.Path
+			}
+		}
 	}
 	
 		
@@ -556,6 +577,7 @@ func (c *APIClient) ParseRelayNodeResponse(nodeInfoResponse *RelayNodeInfoRespon
 		ServiceName:       ServiceName,
 		HeaderType:        HeaderType,
 		CypherMethod:      nodeInfoResponse.Method,
+		CypherKey:         nodeInfoResponse.QuicKey,
 		AllowInsecure:     nodeInfoResponse.AllowInsecure,
 		Address:           nodeInfoResponse.Address,
 		ListenIP:          nodeInfoResponse.ListenIP,

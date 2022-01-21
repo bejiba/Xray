@@ -159,6 +159,25 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			ServiceName: nodeInfo.ServiceName,
 		}
 		streamSetting.GRPCConfig = grpcSettings
+	}else if networkType == "kcp" {
+		kcpSettings := &conf.KCPConfig{
+			Seed: &nodeInfo.Key,
+		}
+		streamSetting.KCPConfig = kcpSettings
+	}else if networkType == "quic" {
+		headers := make(map[string]string)
+		headers["type"] = nodeInfo.HeaderType
+		var header json.RawMessage
+		header, err := json.Marshal(headers)
+		if err != nil {
+			return nil, fmt.Errorf("Marshal Header Type %s into config fialed: %s", header, err)
+		}
+		quicSettings := &conf.QUICConfig{
+			Header:        header,
+			Security: nodeInfo.CypherMethod,
+			Key:  nodeInfo.Key,
+		}
+		streamSetting.QUICConfig = quicSettings
 	}
 
 	streamSetting.Network = &transportProtocol
