@@ -168,17 +168,15 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 		if err != nil {
 			log.Print(err)
 			return nil
-		}		
-		
-		if c.nodeInfo.NodeType == "Shadowsocks-Plugin" {
-			err = c.removeOldTag(fmt.Sprintf("dokodemo-door_%d", c.nodeInfo.Port+1))
 		}
 		
-		if err != nil {
-			log.Print(err)
-			return nil
-		}	
-		
+		if c.nodeInfo.NodeType == "Shadowsocks-Plugin" {
+			er = c.removeOldTag(fmt.Sprintf("dokodemo-door_%d", c.nodeInfo.Port+1))
+			if er != nil {
+				log.Print(er)
+				return nil
+			}
+		}		
 	
 		// Add new tag
 		err = c.addNewTag(newNodeInfo)

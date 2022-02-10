@@ -131,7 +131,7 @@ func (p *Panel) loadCore(panelConfig *Config) *core.Instance {
 func (p *Panel) Start() {
 	p.access.Lock()
 	defer p.access.Unlock()
-	log.Print("Start the panel..")
+	log.Print("Starting Xray..")
 	// Load Core
 	server := p.loadCore(p.panelConfig)
 	if err := server.Start(); err != nil {
@@ -160,7 +160,7 @@ func (p *Panel) Start() {
 	for _, s := range p.Service {
 		err := s.Start()
 		if err != nil {
-			log.Panicf("Panel Start fialed: %s", err)
+			log.Panicf("Xray Service Start fialed: %s", err)
 		}
 	}
 	p.Running = true
@@ -174,7 +174,7 @@ func (p *Panel) Close() {
 	for _, s := range p.Service {
 		err := s.Close()
 		if err != nil {
-			log.Panicf("Panel Close fialed: %s", err)
+			log.Panicf("Xray Service Close fialed: %s", err)
 		}
 	}
 	p.Service = nil

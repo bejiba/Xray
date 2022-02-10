@@ -23,7 +23,7 @@ var (
 )
 
 var (
-	version  = "v0.7.5.1"
+	version  = "v0.7.6.0"
 	codename = "XManager Backend"
 	intro    = "An Xray Server For XManager"
 	credits  = "Credits : Github/XrayR-project"

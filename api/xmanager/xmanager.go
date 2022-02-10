@@ -369,6 +369,7 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 		if port <= 0 {
 			return nil, fmt.Errorf("Shadowsocks-Plugin listen port must be greater than 1")
 		}
+		
 		if nodeInfoResponse.Security == "tls" {
 			enableTLS = true
 		}
