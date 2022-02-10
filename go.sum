@@ -898,7 +898,7 @@ github.com/xtls/go v0.0.0-20210920065950-d4af136d3672 h1:4mkzGhKqt3JO1BWYjtD3iRF
 github.com/xtls/go v0.0.0-20210920065950-d4af136d3672/go.mod h1:YGGVbz9cOxyKFUmhW7LGaLZaMA0cPlHJinvAmVxEMSU=
 github.com/xcode75/xraycore v1.5.2 h1:PudlROatJgPC3edN+dNvuqPt9CumMtdTHxctInfilZg=
 github.com/xcode75/xraycore v1.5.2/go.mod h1:Bxcd3dWdvHxPobiCKJc5lrp0yQfVi6ZCvzoJS8ii170=
-github.com/xcode75/xraycore v1.5.3 h1:V4aMiX5U05Uc1h1AuMUumeGbuwQP+kt4OmZNU0ywzpI=
+github.com/xcode75/xraycore v1.5.3 h1:H80Rh/IEzRVItKgITo1kGYG6XCcDxa4yIa37aS/TcSc=
 github.com/xcode75/xraycore v1.5.3/go.mod h1:dmB4RoCm0QUvtlkBuG7xkMUZywslR4zRLCLo7ndvF10=
 github.com/yuin/goldmark v1.1.25/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
 github.com/yuin/goldmark v1.1.27/go.mod h1:3hX8gzYuyVAZsxl0MRgGTJEmQBFcNTphYh9decYSb74=
