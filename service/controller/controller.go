@@ -118,9 +118,9 @@ func (c *Controller) Start() error {
 		Execute:  c.userInfoMonitor,
 	}
 	
-	log.Print("Start monitor node status")
+	log.Printf("[NodeID: %d] Start monitor node status", c.nodeInfo.NodeID)
 	c.nodeInfoMonitorPeriodic.Start()
-	log.Print("Start report node status")
+	log.Printf("[NodeID: %d] Start monitor node status", c.nodeInfo.NodeID)
 	c.userReportPeriodic.Start()
 	return nil
 }
@@ -261,6 +261,7 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 			if err != nil {
 				log.Print(err)
 			}
+			log.Printf("[NodeID: %d] %d Users Deleted", c.nodeInfo.NodeID, len(deleted))
 		}
 		if len(added) > 0 {
 			err = c.addNewUser(&added, c.nodeInfo)
@@ -271,8 +272,9 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 			if err := c.UpdateInboundLimiter(c.Tag, &added); err != nil {
 				log.Print(err)
 			}
+			log.Printf("[NodeID: %d] %d User Added", c.nodeInfo.NodeID, len(added))
 		}
-		log.Printf("%d user deleted, %d user added", len(deleted), len(added))
+		
 	}
 	c.userList = newUserInfo
 	return nil
@@ -422,7 +424,7 @@ func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo
 	if err != nil {
 		return err
 	}
-	log.Printf("Added %d new users", len(*userInfo))
+	log.Printf("[NodeID: %d] Added %d new users", c.nodeInfo.NodeID, len(*userInfo))
 	return nil
 }
 
@@ -507,7 +509,7 @@ func (c *Controller) userInfoMonitor() (err error) {
 		if err = c.apiClient.ReportNodeOnlineUsers(onlineDevice); err != nil {
 			log.Print(err)
 		} else {
-			log.Printf("Report %d online users", len(*onlineDevice))
+			log.Printf("[NodeID: %d] Report %d Online IPs", c.nodeInfo.NodeID, len(*onlineDevice))
 		}
 	}
 	// Report Illegal user
@@ -517,7 +519,7 @@ func (c *Controller) userInfoMonitor() (err error) {
 		if err = c.apiClient.ReportIllegal(detectResult); err != nil {
 			log.Print(err)
 		} else {
-			log.Printf("Report %d illegal behaviors", len(*detectResult))
+			log.Printf("[NodeID: %d] Report %d Activities matching rules", c.nodeInfo.NodeID, len(*detectResult))
 		}
 
 	}
