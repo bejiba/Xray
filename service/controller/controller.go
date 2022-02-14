@@ -261,7 +261,7 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 			if err != nil {
 				log.Print(err)
 			}
-			log.Printf("[NodeID: %d] %d Users Deleted", c.nodeInfo.NodeID, len(deleted))
+			log.Printf("[NodeID: %d] Deleted %d Users", c.nodeInfo.NodeID, len(deleted))
 		}
 		if len(added) > 0 {
 			err = c.addNewUser(&added, c.nodeInfo)
@@ -272,7 +272,7 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 			if err := c.UpdateInboundLimiter(c.Tag, &added); err != nil {
 				log.Print(err)
 			}
-			log.Printf("[NodeID: %d] %d User Added", c.nodeInfo.NodeID, len(added))
+			//log.Printf("[NodeID: %d] Added %d Users", c.nodeInfo.NodeID, len(added))
 		}
 		
 	}
@@ -424,7 +424,7 @@ func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo
 	if err != nil {
 		return err
 	}
-	log.Printf("[NodeID: %d] Added %d new users", c.nodeInfo.NodeID, len(*userInfo))
+	log.Printf("[NodeID: %d] Added %d New Users", c.nodeInfo.NodeID, len(*userInfo))
 	return nil
 }
 

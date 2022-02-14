@@ -23,16 +23,16 @@ var (
 )
 
 var (
-	version  = "v0.7.6.1"
-	codename = "XManager Backend"
+	version  = "v0.7.6.2"
+	maintainer = "xcode75"
 	intro    = "An Xray Server For XManager"
 	credits  = "Credits : Github/XrayR-project"
 )
 
 func showVersion() {
-	fmt.Printf("%s \n", codename)
-	fmt.Printf("%s \n", version)
 	fmt.Printf("%s \n", intro)
+	fmt.Printf("%s \n", version)
+	fmt.Printf("%s \n", maintainer)
 	fmt.Printf("%s \n",credits)
 }
 
