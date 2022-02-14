@@ -509,7 +509,7 @@ func (c *Controller) userInfoMonitor() (err error) {
 		if err = c.apiClient.ReportNodeOnlineUsers(onlineDevice); err != nil {
 			log.Print(err)
 		} else {
-			log.Printf("[NodeID: %d] Report %d Online IPs", c.nodeInfo.NodeID, len(*onlineDevice))
+			log.Printf("Report %d Online IPs", len(*onlineDevice))
 		}
 	}
 	// Report Illegal user
