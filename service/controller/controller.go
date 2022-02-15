@@ -316,7 +316,7 @@ func (c *Controller) addNewTag(userInfo *[]api.UserInfo, newNodeInfo *api.NodeIn
 			}
 		}
 	} else {
-		return c.addInboundForSSPlugin(*newNodeInfo)
+		return c.addInboundForSSPlugin(userInfo, *newNodeInfo)
 	}
 	return nil
 }

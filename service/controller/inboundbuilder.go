@@ -117,7 +117,7 @@ func InboundBuilder(config *Config, userInfo *[]api.UserInfo, nodeInfo *api.Node
 				Accounts: socksUsers,
 				AuthMethod : "password",
 				UDP : true,
-				Host : "127.0.0.1",
+				Host : &conf.Address{net.ParseAddress("127.0.0.1")},
 				Timeout: 60,
 				UserLevel : 0,
 			}
@@ -301,8 +301,8 @@ func buildTrojanFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.TrojanInbo
 
 
 func buildsocksUsers(userInfo *[]api.UserInfo) ([]*conf.SocksAccount, error) {
-	socksUsers := make([]*conf.SocksAccount, len(userInfo))
-	for i, user := range userInfo {
+	socksUsers := make([]*conf.SocksAccount, len(*userInfo))
+	for i, user := range *userInfo {
 		socksUsers[i] = &conf.SocksAccount{
 			Username: user.Email,
 			Password: user.Passwd,
