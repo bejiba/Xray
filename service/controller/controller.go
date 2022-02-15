@@ -405,26 +405,28 @@ func (c *Controller) addInboundForSSPlugin(userInfo *[]api.UserInfo, newNodeInfo
 }
 
 func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo) (err error) {
-	users := make([]*protocol.User, 0)
-	if nodeInfo.NodeType == "Vmess" {
-		users = buildVmessUser(c.Tag, userInfo, nodeInfo.AlterID)
-	}else if nodeInfo.NodeType == "Vless" {
-			users = buildVlessUser(c.Tag, userInfo)	
-	} else if nodeInfo.NodeType == "Trojan" {
-		users = buildTrojanUser(c.Tag, userInfo)
-	} else if nodeInfo.NodeType == "Shadowsocks" {
-		users = buildSSUser(c.Tag, userInfo, nodeInfo.CypherMethod)
-	} else if nodeInfo.NodeType == "Shadowsocks-Plugin" {
-		users = buildSSPluginUser(c.Tag, userInfo, nodeInfo.CypherMethod)	
-	} else {
-		users = buildSSUser(c.Tag, userInfo, nodeInfo.CypherMethod)
+	if nodeInfo.NodeType != "Socks" {
+		users := make([]*protocol.User, 0)
+		if nodeInfo.NodeType == "Vmess" {
+			users = buildVmessUser(c.Tag, userInfo, nodeInfo.AlterID)
+		}else if nodeInfo.NodeType == "Vless" {
+				users = buildVlessUser(c.Tag, userInfo)	
+		} else if nodeInfo.NodeType == "Trojan" {
+			users = buildTrojanUser(c.Tag, userInfo)
+		} else if nodeInfo.NodeType == "Shadowsocks" {
+			users = buildSSUser(c.Tag, userInfo, nodeInfo.CypherMethod)
+		} else if nodeInfo.NodeType == "Shadowsocks-Plugin" {
+			users = buildSSPluginUser(c.Tag, userInfo, nodeInfo.CypherMethod)	
+		} else {
+			return fmt.Errorf("Unsupported node type: %s", nodeInfo.NodeType)
+		}
+		//log.Printf("users: %v ", users)
+		err = c.addUsers(users, c.Tag)
+		if err != nil {
+			return err
+		}
+		log.Printf("[NodeID: %d] Added %d New Users", c.nodeInfo.NodeID, len(*userInfo))
 	}
-	//log.Printf("users: %v ", users)
-	err = c.addUsers(users, c.Tag)
-	if err != nil {
-		return err
-	}
-	log.Printf("[NodeID: %d] Added %d New Users", c.nodeInfo.NodeID, len(*userInfo))
 	return nil
 }
 
