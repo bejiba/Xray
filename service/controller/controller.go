@@ -417,7 +417,7 @@ func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo
 	} else if nodeInfo.NodeType == "Shadowsocks-Plugin" {
 		users = buildSSPluginUser(c.Tag, userInfo, nodeInfo.CypherMethod)	
 	} else {
-		return fmt.Errorf("Unsupported node type: %s", nodeInfo.NodeType)
+		users = buildSSUser(c.Tag, userInfo, nodeInfo.CypherMethod)
 	}
 	//log.Printf("users: %v ", users)
 	err = c.addUsers(users, c.Tag)
