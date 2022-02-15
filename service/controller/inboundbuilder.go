@@ -15,7 +15,7 @@ import (
 
 type SocksServerConfig struct {
 	AuthMethod string          `json:"auth"`
-	Accounts   []*SocksAccount `json:"accounts"`
+	Accounts   []*conf.SocksAccount `json:"accounts"`
 	UDP        bool            `json:"udp"`
 	Host       string          `json:"ip"`
 	Timeout    uint32          `json:"timeout"`
