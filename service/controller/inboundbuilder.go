@@ -13,6 +13,15 @@ import (
 	"github.com/xcode75/xraycore/infra/conf"
 )
 
+type SocksServerConfig struct {
+	AuthMethod string          `json:"auth"`
+	Accounts   []*SocksAccount `json:"accounts"`
+	UDP        bool            `json:"udp"`
+	Host       string          `json:"ip"`
+	Timeout    uint32          `json:"timeout"`
+	UserLevel  uint32          `json:"userLevel"`
+}
+
 //InboundBuilder build Inbound config for different protocol
 func InboundBuilder(config *Config, userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo) (*core.InboundHandlerConfig, error) {
 	inboundDetourConfig := &conf.InboundDetourConfig{}
@@ -113,11 +122,11 @@ func InboundBuilder(config *Config, userInfo *[]api.UserInfo, nodeInfo *api.Node
 		protocol = "socks"
 		socksUsers, err := buildsocksUsers(userInfo)
 		if err == nil {
-			proxySetting = &conf.SocksServerConfig{
+			proxySetting = &SocksServerConfig{
 				Accounts: socksUsers,
 				AuthMethod : "password",
 				UDP : true,
-				Host : &conf.Address{net.ParseAddress("127.0.0.1")},
+				Host : "127.0.0.1",
 				Timeout: 60,
 				UserLevel : 0,
 			}
