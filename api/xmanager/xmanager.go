@@ -312,7 +312,11 @@ func (c *APIClient) ParseNodeResponse(nodeInfoResponse *NodeInfoResponse) (*api.
 	if nodeInfoResponse.Address == "" {
 		return nil, fmt.Errorf("No server address in response")
 	}
-
+	
+	if nodeInfoResponse.Type == "Socks" {
+		transportProtocol = "tcp"
+	}
+	
 	if nodeInfoResponse.Type == "Trojan" {
 		transportProtocol = "tcp"
 		if nodeInfoResponse.Security == "xtls" || nodeInfoResponse.Security == "tls"{
