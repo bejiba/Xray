@@ -61,7 +61,7 @@ func (c *Controller) Start() error {
 	
 	
 	// Add new tag
-	err = c.addNewTag(newNodeInfo)
+	err = c.addNewTag(userInfo, newNodeInfo)
 	if err != nil {
 		log.Panic(err)
 		return err
@@ -179,7 +179,7 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 		}		
 	
 		// Add new tag
-		err = c.addNewTag(newNodeInfo)
+		err = c.addNewTag(newUserInfo, newNodeInfo)
 		if err != nil {
 			log.Panic(err)
 			return err
@@ -353,13 +353,13 @@ func (c *Controller) RelayTag(newRelayNodeInfo *api.RelayNodeInfo, userInfo *[]a
 	return nil
 }
 
-func (c *Controller) addInboundForSSPlugin(newNodeInfo api.NodeInfo) (err error) {
+func (c *Controller) addInboundForSSPlugin(userInfo *[]api.UserInfo, newNodeInfo api.NodeInfo) (err error) {
 	// Shadowsocks-Plugin require a seaperate inbound for other TransportProtocol likes: ws, grpc
 	fakeNodeInfo := newNodeInfo
 	fakeNodeInfo.TransportProtocol = "tcp"
 	fakeNodeInfo.EnableTLS = false
 	// Add a regular Shadowsocks inbound and outbound
-	inboundConfig, err := InboundBuilder(c.config, &fakeNodeInfo)
+	inboundConfig, err := InboundBuilder(c.config, userInfo, &fakeNodeInfo)
 	if err != nil {
 		return err
 	}
@@ -382,7 +382,7 @@ func (c *Controller) addInboundForSSPlugin(newNodeInfo api.NodeInfo) (err error)
 	fakeNodeInfo = newNodeInfo
 	fakeNodeInfo.Port++
 	fakeNodeInfo.NodeType = "dokodemo-door"
-	inboundConfig, err = InboundBuilder(c.config, &fakeNodeInfo)
+	inboundConfig, err = InboundBuilder(c.config, userInfo, &fakeNodeInfo)
 	if err != nil {
 		return err
 	}
