@@ -14,7 +14,7 @@ import (
 )
 
 //InboundBuilder build Inbound config for different protocol
-func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandlerConfig, error) {
+func InboundBuilder(config *Config, userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo) (*core.InboundHandlerConfig, error) {
 	inboundDetourConfig := &conf.InboundDetourConfig{}
 	// Build Listen IP address
 	ipAddress := net.ParseAddress(nodeInfo.ListenIP)
@@ -108,6 +108,21 @@ func InboundBuilder(config *Config, nodeInfo *api.NodeInfo) (*core.InboundHandle
 			Host:        "v1.mux.cool",
 			Redirect:    false,
 			NetworkList: []string{"tcp", "udp"},
+		}
+	} else if nodeInfo.NodeType == "Socks" {
+		protocol = "socks"
+		socksUsers, err := buildsocksUsers(userInfo)
+		if err == nil {
+			proxySetting = &conf.SocksServerConfig{
+				Accounts: socksUsers,
+				AuthMethod : "password",
+				UDP : true,
+				Host : "127.0.0.1",
+				Timeout: 60,
+				UserLevel : 0,
+			}
+		} else {
+			return nil, err
 		}
 	} else {
 		return nil, fmt.Errorf("Unsupported node type: %s", nodeInfo.NodeType)
@@ -282,4 +297,16 @@ func buildTrojanFallbacks(fallbackConfigs []*FallBackConfig) ([]*conf.TrojanInbo
 		}
 	}
 	return trojanFallBacks, nil
+}
+
+
+func buildsocksUsers(userInfo *[]api.UserInfo) ([]*conf.SocksAccount, error) {
+	socksUsers := make([]*conf.SocksAccount, len(userInfo))
+	for i, user := range userInfo {
+		socksUsers[i] = &conf.SocksAccount{
+			Username: user.Email,
+			Password: user.Passwd,
+		}
+	}
+	return socksUsers, nil
 }

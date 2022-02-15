@@ -294,9 +294,9 @@ func (c *Controller) removeOldTag(oldtag string) (err error) {
 
 
 
-func (c *Controller) addNewTag(newNodeInfo *api.NodeInfo) (err error) {
+func (c *Controller) addNewTag(userInfo *[]api.UserInfo, newNodeInfo *api.NodeInfo) (err error) {
 	if newNodeInfo.NodeType != "Shadowsocks-Plugin" {
-		inboundConfig, err := InboundBuilder(c.config, newNodeInfo)
+		inboundConfig, err := InboundBuilder(c.config, userInfo, newNodeInfo)
 		if err != nil {
 			return err
 		}
