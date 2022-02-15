@@ -61,7 +61,7 @@ func (c *Controller) Start() error {
 	
 	
 	// Add new tag
-	err = c.addNewTag(userInfo, newNodeInfo)
+	err = c.addNewTag(newNodeInfo)
 	if err != nil {
 		log.Panic(err)
 		return err
@@ -179,7 +179,7 @@ func (c *Controller) nodeInfoMonitor() (err error) {
 		}		
 	
 		// Add new tag
-		err = c.addNewTag(newUserInfo, newNodeInfo)
+		err = c.addNewTag(newNodeInfo)
 		if err != nil {
 			log.Panic(err)
 			return err
@@ -294,9 +294,9 @@ func (c *Controller) removeOldTag(oldtag string) (err error) {
 
 
 
-func (c *Controller) addNewTag(userInfo *[]api.UserInfo, newNodeInfo *api.NodeInfo) (err error) {
+func (c *Controller) addNewTag(newNodeInfo *api.NodeInfo) (err error) {
 	if newNodeInfo.NodeType != "Shadowsocks-Plugin" {
-		inboundConfig, err := InboundBuilder(c.config, userInfo, newNodeInfo)
+		inboundConfig, err := InboundBuilder(c.config, newNodeInfo)
 		if err != nil {
 			return err
 		}
@@ -316,7 +316,7 @@ func (c *Controller) addNewTag(userInfo *[]api.UserInfo, newNodeInfo *api.NodeIn
 			}
 		}
 	} else {
-		return c.addInboundForSSPlugin(userInfo, *newNodeInfo)
+		return c.addInboundForSSPlugin(*newNodeInfo)
 	}
 	return nil
 }
@@ -353,13 +353,13 @@ func (c *Controller) RelayTag(newRelayNodeInfo *api.RelayNodeInfo, userInfo *[]a
 	return nil
 }
 
-func (c *Controller) addInboundForSSPlugin(userInfo *[]api.UserInfo, newNodeInfo api.NodeInfo) (err error) {
+func (c *Controller) addInboundForSSPlugin(newNodeInfo api.NodeInfo) (err error) {
 	// Shadowsocks-Plugin require a seaperate inbound for other TransportProtocol likes: ws, grpc
 	fakeNodeInfo := newNodeInfo
 	fakeNodeInfo.TransportProtocol = "tcp"
 	fakeNodeInfo.EnableTLS = false
 	// Add a regular Shadowsocks inbound and outbound
-	inboundConfig, err := InboundBuilder(c.config, userInfo, &fakeNodeInfo)
+	inboundConfig, err := InboundBuilder(c.config,  &fakeNodeInfo)
 	if err != nil {
 		return err
 	}
@@ -382,7 +382,7 @@ func (c *Controller) addInboundForSSPlugin(userInfo *[]api.UserInfo, newNodeInfo
 	fakeNodeInfo = newNodeInfo
 	fakeNodeInfo.Port++
 	fakeNodeInfo.NodeType = "dokodemo-door"
-	inboundConfig, err = InboundBuilder(c.config, userInfo, &fakeNodeInfo)
+	inboundConfig, err = InboundBuilder(c.config, &fakeNodeInfo)
 	if err != nil {
 		return err
 	}
@@ -405,7 +405,7 @@ func (c *Controller) addInboundForSSPlugin(userInfo *[]api.UserInfo, newNodeInfo
 }
 
 func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo) (err error) {
-	if nodeInfo.NodeType != "Socks" {
+	
 		users := make([]*protocol.User, 0)
 		if nodeInfo.NodeType == "Vmess" {
 			users = buildVmessUser(c.Tag, userInfo, nodeInfo.AlterID)
@@ -417,7 +417,9 @@ func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo
 			users = buildSSUser(c.Tag, userInfo, nodeInfo.CypherMethod)
 		} else if nodeInfo.NodeType == "Shadowsocks-Plugin" {
 			users = buildSSPluginUser(c.Tag, userInfo, nodeInfo.CypherMethod)	
-		} else {
+		} else if nodeInfo.NodeType == "Socks" {
+			users = buildsocksUser(c.Tag, userInfo)
+		}else {
 			return fmt.Errorf("Unsupported node type: %s", nodeInfo.NodeType)
 		}
 		//log.Printf("users: %v ", users)
@@ -426,7 +428,7 @@ func (c *Controller) addNewUser(userInfo *[]api.UserInfo, nodeInfo *api.NodeInfo
 			return err
 		}
 		log.Printf("[NodeID: %d] Added %d New Users", c.nodeInfo.NodeID, len(*userInfo))
-	}
+	
 	return nil
 }
 

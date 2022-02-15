@@ -11,6 +11,7 @@ import (
 	"github.com/xcode75/xraycore/proxy/shadowsocks"
 	"github.com/xcode75/xraycore/proxy/trojan"
 	"github.com/xcode75/xraycore/proxy/vless"
+	"github.com/xcode75/xraycore/proxy/socks"
 )
 
 var AEADMethod = []shadowsocks.CipherType{shadowsocks.CipherType_AES_128_GCM, shadowsocks.CipherType_AES_256_GCM, shadowsocks.CipherType_CHACHA20_POLY1305}
@@ -94,6 +95,22 @@ func buildSSPluginUser(tag string, userInfo *[]api.UserInfo, method string) (use
 			Level:   0,
 			Email:   fmt.Sprintf("%s|%s|%d", tag, user.Email, user.UID),
 			Account: serial.ToTypedMessage(ssAccount),
+		})
+	}
+	return users
+}
+
+func buildsocksUser(tag string, userInfo *[]api.UserInfo) (users []*protocol.User) {
+	users = make([]*protocol.User, 0)
+	for _, user := range *userInfo {
+		socksAccount := &socks.Account{
+			Username: user.Email,
+			Password: user.Passwd,
+		}
+		users = append(users, &protocol.User{
+			Level:   0,
+			Email:   fmt.Sprintf("%s|%s|%d", tag, user.Email, user.UID),
+			Account: serial.ToTypedMessage(socksAccount),
 		})
 	}
 	return users
