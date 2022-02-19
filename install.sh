@@ -100,7 +100,7 @@ install_acme() {
     curl https://get.acme.sh | sh
 }
 
-install_Xray1() {
+install_Xray() {
     if [[ -e /usr/local/Xray1/ ]]; then
         rm /usr/local/Xray1/ -rf
     fi
@@ -198,4 +198,4 @@ install_Xray1() {
 echo -e "${green}开始安装${plain}"
 install_base
 install_acme
-install_Xray1 $1
+install_Xray $1
