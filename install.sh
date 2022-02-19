@@ -85,10 +85,10 @@ install_base() {
 
 # 0: running, 1: not running, 2: not installed
 check_status() {
-    if [[ ! -f /etc/systemd/system/Xray.service ]]; then
+    if [[ ! -f /etc/systemd/system/Xray1.service ]]; then
         return 2
     fi
-    temp=$(systemctl status Xray | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+    temp=$(systemctl status Xray1 | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
     if [[ x"${temp}" == x"running" ]]; then
         return 0
     else
@@ -100,16 +100,16 @@ install_acme() {
     curl https://get.acme.sh | sh
 }
 
-install_Xray() {
-    if [[ -e /usr/local/Xray/ ]]; then
-        rm /usr/local/Xray/ -rf
+install_Xray1() {
+    if [[ -e /usr/local/Xray1/ ]]; then
+        rm /usr/local/Xray1/ -rf
     fi
 
-    mkdir /usr/local/Xray/ -p
-	cd /usr/local/Xray/
+    mkdir /usr/local/Xray1/ -p
+	cd /usr/local/Xray1/
 
     if  [ $# == 0 ] ;then
-        last_version=$(curl -Ls "https://api.github.com/repos/bejiba/Xray/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        last_version=$(curl -Ls "https://api.github.com/repos/xcode/Xray/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
             echo -e "${red}检测 Xray 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 Xray 版本安装${plain}"
             exit 1
