@@ -109,7 +109,7 @@ install_Xray1() {
 	cd /usr/local/Xray1/
 
     if  [ $# == 0 ] ;then
-        last_version=$(curl -Ls "https://api.github.com/repos/xcode/Xray/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        last_version=$(curl -Ls "https://api.github.com/repos/bejiba/Xray/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
             echo -e "${red}检测 Xray 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 Xray 版本安装${plain}"
             exit 1
