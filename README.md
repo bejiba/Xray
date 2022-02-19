@@ -1,4 +1,4 @@
 # Xray
 ```
-  bash <(curl -Ls https://raw.githubusercontent.com/xcode75/Xray/master/install.sh)
+  bash <(curl -Ls https://raw.githubusercontent.com/bejiba/Xray/master/install.sh)
 ```
