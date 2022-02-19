@@ -11,8 +11,8 @@ LimitAS=infinity
 LimitRSS=infinity
 LimitCORE=infinity
 LimitNOFILE=999999
-WorkingDirectory=/usr/local/Xray/
-ExecStart=/usr/local/Xray/Xray -config /etc/Xray/config.yml
+WorkingDirectory=/usr/local/Xray1/
+ExecStart=/usr/local/Xray1/Xray1 -config /etc/Xray1/config.yml
 Restart=on-failure
 RestartSec=10
 
