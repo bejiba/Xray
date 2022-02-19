@@ -84,7 +84,7 @@ before_show_menu() {
 }
 
 install() {
-    bash <(curl -Ls https://raw.githubusercontent.com/xcode75/Xray/master/install.sh)
+    bash <(curl -Ls https://raw.githubusercontent.com/bejiba/Xray/master/install.sh)
     if [[ $? == 0 ]]; then
         if [[ $# == 0 ]]; then
             start
@@ -108,7 +108,7 @@ update() {
 #        fi
 #        return 0
 #    fi
-    bash <(curl -Ls https://raw.githubusercontent.com/xcode75/Xray/master/install.sh) $version
+    bash <(curl -Ls https://raw.githubusercontent.com/bejiba/Xray/master/install.sh) $version
     if [[ $? == 0 ]]; then
         echo -e "${green}更新完成，已自动重启 Xray，请使用 Xray log 查看运行日志${plain}"
         exit
@@ -121,7 +121,7 @@ update() {
 
 config() {
     echo "Xray在修改配置后会自动尝试重启"
-    vi /etc/Xray/config.yml
+    vi /etc/Xray1/config.yml
     sleep 2
     check_status
     case $? in
@@ -149,16 +149,16 @@ uninstall() {
         fi
         return 0
     fi
-    systemctl stop Xray
-    systemctl disable Xray
-    rm /etc/systemd/system/Xray.service -f
+    systemctl stop Xray1
+    systemctl disable Xray1
+    rm /etc/systemd/system/Xray1.service -f
     systemctl daemon-reload
     systemctl reset-failed
-    rm /etc/Xray/ -rf
-    rm /usr/local/Xray/ -rf
+    rm /etc/Xray1/ -rf
+    rm /usr/local/Xray1/ -rf
 
     echo ""
-    echo -e "卸载成功，如果你想删除此脚本，则退出脚本后运行 ${green}rm /usr/bin/Xray -f${plain} 进行删除"
+    echo -e "卸载成功，如果你想删除此脚本，则退出脚本后运行 ${green}rm /usr/bin/Xray1 -f${plain} 进行删除"
     echo ""
 
     if [[ $# == 0 ]]; then
@@ -172,13 +172,13 @@ start() {
         echo ""
         echo -e "${green}Xray已运行，无需再次启动，如需重启请选择重启${plain}"
     else
-        systemctl start Xray
+        systemctl start Xray1
         sleep 2
         check_status
         if [[ $? == 0 ]]; then
-            echo -e "${green}Xray 启动成功，请使用 Xray log 查看运行日志${plain}"
+            echo -e "${green}Xray1 启动成功，请使用 Xray log 查看运行日志${plain}"
         else
-            echo -e "${red}Xray 可能启动失败，请稍后使用 Xray log 查看日志信息${plain}"
+            echo -e "${red}Xray1 可能启动失败，请稍后使用 Xray log 查看日志信息${plain}"
         fi
     fi
 
@@ -188,13 +188,13 @@ start() {
 }
 
 stop() {
-    systemctl stop Xray
+    systemctl stop Xray1
     sleep 2
     check_status
     if [[ $? == 1 ]]; then
-        echo -e "${green}Xray 停止成功${plain}"
+        echo -e "${green}Xray1 停止成功${plain}"
     else
-        echo -e "${red}Xray 停止失败，可能是因为停止时间超过了两秒，请稍后查看日志信息${plain}"
+        echo -e "${red}Xray1 停止失败，可能是因为停止时间超过了两秒，请稍后查看日志信息${plain}"
     fi
 
     if [[ $# == 0 ]]; then
@@ -203,13 +203,13 @@ stop() {
 }
 
 restart() {
-    systemctl restart Xray
+    systemctl restart Xray1
     sleep 2
     check_status
     if [[ $? == 0 ]]; then
-        echo -e "${green}Xray 重启成功，请使用 Xray log 查看运行日志${plain}"
+        echo -e "${green}Xray1 重启成功，请使用 Xray log 查看运行日志${plain}"
     else
-        echo -e "${red}Xray 可能启动失败，请稍后使用 Xray log 查看日志信息${plain}"
+        echo -e "${red}Xray1 可能启动失败，请稍后使用 Xray log 查看日志信息${plain}"
     fi
     if [[ $# == 0 ]]; then
         before_show_menu
@@ -217,18 +217,18 @@ restart() {
 }
 
 status() {
-    systemctl status Xray --no-pager -l
+    systemctl status Xray1 --no-pager -l
     if [[ $# == 0 ]]; then
         before_show_menu
     fi
 }
 
 enable() {
-    systemctl enable Xray
+    systemctl enable Xray1
     if [[ $? == 0 ]]; then
-        echo -e "${green}Xray 设置开机自启成功${plain}"
+        echo -e "${green}Xray1 设置开机自启成功${plain}"
     else
-        echo -e "${red}Xray 设置开机自启失败${plain}"
+        echo -e "${red}Xray1 设置开机自启失败${plain}"
     fi
 
     if [[ $# == 0 ]]; then
@@ -237,11 +237,11 @@ enable() {
 }
 
 disable() {
-    systemctl disable Xray
+    systemctl disable Xray1
     if [[ $? == 0 ]]; then
-        echo -e "${green}Xray 取消开机自启成功${plain}"
+        echo -e "${green}Xray1 取消开机自启成功${plain}"
     else
-        echo -e "${red}Xray 取消开机自启失败${plain}"
+        echo -e "${red}Xray1 取消开机自启失败${plain}"
     fi
 
     if [[ $# == 0 ]]; then
@@ -250,7 +250,7 @@ disable() {
 }
 
 show_log() {
-    journalctl -u Xray.service -e --no-pager -f
+    journalctl -u Xray1.service -e --no-pager -f
     if [[ $# == 0 ]]; then
         before_show_menu
     fi
@@ -270,23 +270,23 @@ install_bbr() {
 }
 
 update_shell() {
-    wget -O /usr/bin/Xray -N --no-check-certificate https://raw.githubusercontent.com/xcode75/Xray/master/Xray.sh
+    wget -O /usr/bin/Xray1 -N --no-check-certificate https://raw.githubusercontent.com/bejiba/Xray/master/Xray.sh
     if [[ $? != 0 ]]; then
         echo ""
         echo -e "${red}下载脚本失败，请检查本机能否连接 Github${plain}"
         before_show_menu
     else
-        chmod +x /usr/bin/Xray
+        chmod +x /usr/bin/Xray1
         echo -e "${green}升级脚本成功，请重新运行脚本${plain}" && exit 0
     fi
 }
 
 # 0: running, 1: not running, 2: not installed
 check_status() {
-    if [[ ! -f /etc/systemd/system/Xray.service ]]; then
+    if [[ ! -f /etc/systemd/system/Xray1.service ]]; then
         return 2
     fi
-    temp=$(systemctl status Xray | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
+    temp=$(systemctl status Xray1 | grep Active | awk '{print $3}' | cut -d "(" -f2 | cut -d ")" -f1)
     if [[ x"${temp}" == x"running" ]]; then
         return 0
     else
@@ -295,7 +295,7 @@ check_status() {
 }
 
 check_enabled() {
-    temp=$(systemctl is-enabled Xray)
+    temp=$(systemctl is-enabled Xray1)
     if [[ x"${temp}" == x"enabled" ]]; then
         return 0
     else
@@ -307,7 +307,7 @@ check_uninstall() {
     check_status
     if [[ $? != 2 ]]; then
         echo ""
-        echo -e "${red}Xray已安装，请不要重复安装${plain}"
+        echo -e "${red}Xray1已安装，请不要重复安装${plain}"
         if [[ $# == 0 ]]; then
             before_show_menu
         fi
@@ -321,7 +321,7 @@ check_install() {
     check_status
     if [[ $? == 2 ]]; then
         echo ""
-        echo -e "${red}请先安装Xray${plain}"
+        echo -e "${red}请先安装Xray1${plain}"
         if [[ $# == 0 ]]; then
             before_show_menu
         fi
@@ -335,15 +335,15 @@ show_status() {
     check_status
     case $? in
         0)
-            echo -e "Xray状态: ${green}已运行${plain}"
+            echo -e "Xray1状态: ${green}已运行${plain}"
             show_enable_status
             ;;
         1)
-            echo -e "Xray状态: ${yellow}未运行${plain}"
+            echo -e "Xray1状态: ${yellow}未运行${plain}"
             show_enable_status
             ;;
         2)
-            echo -e "Xray状态: ${red}未安装${plain}"
+            echo -e "Xray1状态: ${red}未安装${plain}"
     esac
 }
 
@@ -357,8 +357,8 @@ show_enable_status() {
 }
 
 show_Xray_version() {
-    echo -n "Xray 版本："
-    /usr/local/Xray/Xray -version
+    echo -n "Xray1 版本："
+    /usr/local/Xray/Xray1 -version
     echo ""
     if [[ $# == 0 ]]; then
         before_show_menu
@@ -366,21 +366,21 @@ show_Xray_version() {
 }
 
 show_usage() {
-    echo "Xray 管理脚本使用方法: "
+    echo "Xray1 管理脚本使用方法: "
     echo "------------------------------------------"
-    echo "Xray              - 显示管理菜单 (功能更多)"
-    echo "Xray start        - 启动 Xray"
-    echo "Xray stop         - 停止 Xray"
-    echo "Xray restart      - 重启 Xray"
-    echo "Xray status       - 查看 Xray 状态"
-    echo "Xray enable       - 设置 Xray 开机自启"
-    echo "Xray disable      - 取消 Xray 开机自启"
-    echo "Xray log          - 查看 Xray 日志"
-    echo "Xray update       - 更新 Xray"
-    echo "Xray update x.x.x - 更新 Xray 指定版本"
-    echo "Xray install      - 安装 Xray"
-    echo "Xray uninstall    - 卸载 Xray"
-    echo "Xray version      - 查看 Xray 版本"
+    echo "Xray1              - 显示管理菜单 (功能更多)"
+    echo "Xray1 start        - 启动 Xray"
+    echo "Xray1 stop         - 停止 Xray"
+    echo "Xray1 restart      - 重启 Xray"
+    echo "Xray1 status       - 查看 Xray 状态"
+    echo "Xray1 enable       - 设置 Xray 开机自启"
+    echo "Xray1 disable      - 取消 Xray 开机自启"
+    echo "Xray1 log          - 查看 Xray 日志"
+    echo "Xray1 update       - 更新 Xray"
+    echo "Xray1 update x.x.x - 更新 Xray 指定版本"
+    echo "Xray1 install      - 安装 Xray"
+    echo "Xray1 uninstall    - 卸载 Xray"
+    echo "Xray1 version      - 查看 Xray 版本"
     echo "------------------------------------------"
 }
 
