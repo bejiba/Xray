@@ -109,22 +109,22 @@ install_Xray() {
 	cd /usr/local/Xray/
 
     if  [ $# == 0 ] ;then
-        last_version=$(curl -Ls "https://api.github.com/repos/xcode75/Xray/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
+        last_version=$(curl -Ls "https://api.github.com/repos/bejiba/Xray/releases/latest" | grep '"tag_name":' | sed -E 's/.*"([^"]+)".*/\1/')
         if [[ ! -n "$last_version" ]]; then
             echo -e "${red}检测 Xray 版本失败，可能是超出 Github API 限制，请稍后再试，或手动指定 Xray 版本安装${plain}"
             exit 1
         fi
         echo -e "检测到 Xray 最新版本：${last_version}，开始安装"
-        wget -N --no-check-certificate -O /usr/local/Xray/Xray-linux.zip https://github.com/xcode75/Xray/releases/download/${last_version}/Xray-linux-${arch}.zip
+        wget -N --no-check-certificate -O /usr/local/Xray1/Xray-linux.zip https://github.com/bejiba/Xray/releases/download/${last_version}/Xray-linux-${arch}.zip
         if [[ $? -ne 0 ]]; then
             echo -e "${red}下载 Xray 失败，请确保你的服务器能够下载 Github 的文件${plain}"
             exit 1
         fi
     else
         last_version=$1
-        url="https://github.com/xcode75/Xray/releases/download/${last_version}/Xray-linux-${arch}.zip"
+        url="https://github.com/bejiba/Xray/releases/download/${last_version}/Xray-linux-${arch}.zip"
         echo -e "开始安装 Xray v$1"
-        wget -N --no-check-certificate -O /usr/local/Xray/Xray-linux.zip ${url}
+        wget -N --no-check-certificate -O /usr/local/Xray1/Xray-linux.zip ${url}
         if [[ $? -ne 0 ]]; then
             echo -e "${red}下载 Xray v$1 失败，请确保此版本存在${plain}"
             exit 1
@@ -133,29 +133,29 @@ install_Xray() {
 
     unzip Xray-linux.zip
     rm Xray-linux.zip -f
-    chmod +x Xray
-    mkdir /etc/Xray/ -p
-    rm /etc/systemd/system/Xray.service -f
-    file="https://github.com/xcode75/Xray/raw/master/Xray.service"
-    wget -N --no-check-certificate -O /etc/systemd/system/Xray.service ${file}
-    #cp -f Xray.service /etc/systemd/system/
+    chmod +x Xray1
+    mkdir /etc/Xray1/ -p
+    rm /etc/systemd/system/Xray1.service -f
+    file="https://github.com/bejiba/Xray/raw/master/Xray1.service"
+    wget -N --no-check-certificate -O /etc/systemd/system/Xray1.service ${file}
+    #cp -f Xray1.service /etc/systemd/system/
     systemctl daemon-reload
-    systemctl stop Xray
-    systemctl enable Xray
-    echo -e "${green}Xray ${last_version}${plain} 安装完成，已设置开机自启"
-    cp geoip.dat /etc/Xray/
-    cp geosite.dat /etc/Xray/ 
-    cp dns.json /etc/Xray/
-    cp rulelist /etc/Xray/
-    cp outbound.json /etc/Xray/
-    cp route.json /etc/Xray/
+    systemctl stop Xray1
+    systemctl enable Xray1
+    echo -e "${green}Xray1 ${last_version}${plain} 安装完成，已设置开机自启"
+    cp geoip.dat /etc/Xray1/
+    cp geosite.dat /etc/Xray1/ 
+    cp dns.json /etc/Xray1/
+    cp rulelist /etc/Xray1/
+    cp outbound.json /etc/Xray1/
+    cp route.json /etc/Xray1/
 
-    if [[ ! -f /etc/Xray/config.yml ]]; then
-        cp config.yml /etc/Xray/
+    if [[ ! -f /etc/Xray1/config.yml ]]; then
+        cp config.yml /etc/Xray1/
         echo -e ""
         echo -e "全新安装，请先参看教程：https://github.com/xcode75/Xray，配置必要的内容"
     else
-        systemctl start Xray
+        systemctl start Xray1
         sleep 2
         check_status
         echo -e ""
@@ -166,32 +166,32 @@ install_Xray() {
         fi
     fi
 
-    if [[ ! -f /etc/Xray/dns.json ]]; then
-        cp dns.json /etc/Xray/
+    if [[ ! -f /etc/Xray1/dns.json ]]; then
+        cp dns.json /etc/Xray1/
     fi
     
-    curl -o /usr/bin/Xray -Ls https://raw.githubusercontent.com/xcode75/Xray/master/Xray.sh
-    chmod +x /usr/bin/Xray
-    ln -s /usr/bin/Xray /usr/bin/xray 
-    chmod +x /usr/bin/xray
+    curl -o /usr/bin/Xray1 -Ls https://raw.githubusercontent.com/bejiba/Xray/master/Xray.sh
+    chmod +x /usr/bin/Xray1
+    ln -s /usr/bin/Xray1 /usr/bin/xray1 
+    chmod +x /usr/bin/xray1
 
     echo -e ""
-    echo "Xray 管理脚本使用方法 (兼容使用xray执行，大小写不敏感): "
+    echo "Xray1 管理脚本使用方法 (兼容使用xray执行，大小写不敏感): "
     echo "------------------------------------------"
-    echo "Xray                    - 显示管理菜单 (功能更多)"
-    echo "Xray start              - 启动 Xray"
-    echo "Xray stop               - 停止 Xray"
-    echo "Xray restart            - 重启 Xray"
-    echo "Xray status             - 查看 Xray 状态"
-    echo "Xray enable             - 设置 Xray 开机自启"
-    echo "Xray disable            - 取消 Xray 开机自启"
-    echo "Xray log                - 查看 Xray 日志"
-    echo "Xray update             - 更新 Xray"
-    echo "Xray update vx.x.x      - 更新 Xray 指定版本"
-    echo "Xray config             - 显示配置文件内容"
-    echo "Xray install            - 安装 Xray"
-    echo "Xray uninstall          - 卸载 Xray"
-    echo "Xray version            - 查看 Xray 版本"
+    echo "Xray1                    - 显示管理菜单 (功能更多)"
+    echo "Xray1 start              - 启动 Xray"
+    echo "Xray1 stop               - 停止 Xray"
+    echo "Xray1 restart            - 重启 Xray"
+    echo "Xray1 status             - 查看 Xray 状态"
+    echo "Xray1 enable             - 设置 Xray 开机自启"
+    echo "Xray1 disable            - 取消 Xray 开机自启"
+    echo "Xray1 log                - 查看 Xray 日志"
+    echo "Xray1 update             - 更新 Xray"
+    echo "Xray1 update vx.x.x      - 更新 Xray 指定版本"
+    echo "Xray1 config             - 显示配置文件内容"
+    echo "Xray1 install            - 安装 Xray"
+    echo "Xray1 uninstall          - 卸载 Xray"
+    echo "Xray1 version            - 查看 Xray 版本"
     echo "------------------------------------------"
 }
 
